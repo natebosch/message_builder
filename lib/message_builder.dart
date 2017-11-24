@@ -21,7 +21,7 @@ class MessageBuilder implements Builder {
     var result = new StringBuffer();
     var hasList = false;
     for (var name in descriptions.keys.toList()..sort()) {
-      var description = parseDescription(name, descriptions[name]);
+      var description = new Description.parse(name, descriptions[name]);
       if (description.hasListField) hasList = true;
       result.write(description.implementation);
     }

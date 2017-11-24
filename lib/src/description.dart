@@ -1,17 +1,21 @@
 const _primitives = const ['String', 'int', 'bool', 'dynamic'];
 
-Description parseDescription(String name, Map params) {
-  if (params.containsKey('enumValues')) {
-    return new EnumType(
-        name, params['wireType'], _parseEnumValues(params['enumValues']));
+abstract class Description {
+  String get implementation;
+  bool get hasListField;
+  factory Description.parse(String name, Map params) {
+    if (params.containsKey('enumValues')) {
+      return new EnumType(
+          name, params['wireType'], _parseEnumValues(params['enumValues']));
+    }
+    if (params.containsKey('subclassBy')) {
+      return _parseSubclassedMessage(name, params);
+    }
+    var fields = params.containsKey('fields')
+        ? _parseFields(params['fields'])
+        : _parseFields(params);
+    return new Message(name, fields);
   }
-  if (params.containsKey('subclassBy')) {
-    return _parseSubclassedMessage(name, params);
-  }
-  var fields = params.containsKey('fields')
-      ? _parseFields(params['fields'])
-      : _parseFields(params);
-  return new Message(name, fields);
 }
 
 Description _parseSubclassedMessage(String name, Map params) {
@@ -58,11 +62,6 @@ FieldType _parseFieldType(dynamic /*String|Map*/ field) {
     }
   }
   throw 'Unhandled field type [$field]';
-}
-
-abstract class Description {
-  String get implementation;
-  bool get hasListField;
 }
 
 class EnumType implements Description {
