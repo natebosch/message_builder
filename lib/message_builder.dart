@@ -90,9 +90,10 @@ Iterable<EnumValue> _parseEnumValues(Map values) {
   return names.map((name) => new EnumValue(name, values[name]));
 }
 
-Iterable<Field> _parseFields(Map fields) {
+Iterable<MessageField> _parseFields(Map fields) {
   var names = fields.keys.toList()..sort();
-  return names.map((name) => new Field(name, _parseFieldType(fields[name])));
+  return names
+      .map((name) => new MessageField(name, _parseFieldType(fields[name])));
 }
 
 FieldType _parseFieldType(dynamic /*String|Map*/ field) {
@@ -184,7 +185,7 @@ class SubclassedMessage implements Description {
 
 class Message implements Description {
   final String name;
-  final List<Field> fields;
+  final List<MessageField> fields;
   final String parent;
   final String parentField;
   final String parentFieldToken;
@@ -276,10 +277,10 @@ class Message implements Description {
     ''';
 }
 
-class Field {
+class MessageField {
   final String name;
   final FieldType type;
-  Field(this.name, this.type);
+  MessageField(this.name, this.type);
   String get toJson => '"$name": $name${type.toJsonSuffix}';
   String get fromParams {
     var typeFromParams = type.fromParams('params["$name"]');
