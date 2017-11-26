@@ -1,0 +1,5 @@
+SomeEnum:
+  wireType: int
+  enumValues:
+    someValue: 1
+    anotherValue: 2

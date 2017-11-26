@@ -47,10 +47,11 @@ Iterable<EnumValue> _parseEnumValues(Map values) {
   return names.map((name) => new EnumValue(name, values[name]));
 }
 
-Iterable<MessageField> _parseFields(Map fields) {
+List<MessageField> _parseFields(Map fields) {
   var names = fields.keys.toList()..sort();
   return names
-      .map((name) => new MessageField(name, _parseFieldType(fields[name])));
+      .map((name) => new MessageField(name, _parseFieldType(fields[name])))
+      .toList();
 }
 
 FieldType _parseFieldType(dynamic /*String|Map*/ field) {
@@ -132,10 +133,8 @@ class SubclassedMessage implements Description {
     }
     Map toJson();
   }
-
-  ${subclasses.map((c) => c.implementation).join('\n')}
   ''')
-    ];
+    ]..addAll(subclasses.expand((c) => c.implementation));
   }
 }
 

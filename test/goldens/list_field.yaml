@@ -1,0 +1,5 @@
+SomeMessage:
+  stringList:
+    listType: String
+  intList:
+    listType: int
