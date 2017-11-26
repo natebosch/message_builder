@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:build/build.dart';
+import 'package:code_builder/code_builder.dart';
 import 'package:dart_style/dart_style.dart';
 import 'package:yaml/yaml.dart';
 
@@ -16,25 +17,26 @@ class MessageBuilder implements Builder {
 
   @override
   Future build(BuildStep buildStep) async {
-    var descriptions =
+    final descriptions =
         loadYaml(await buildStep.readAsString(buildStep.inputId));
-    var result = new StringBuffer();
+    final result = <Code>[];
     var hasList = false;
-    for (var name in descriptions.keys.toList()..sort()) {
-      var description = new Description.parse(name, descriptions[name]);
+    for (final name in descriptions.keys.toList()..sort()) {
+      final description = new Description.parse(name, descriptions[name]);
       if (description.hasListField) hasList = true;
-      result.write(description.implementation);
+      result.addAll(description.implementation);
     }
     if (hasList) {
-      result.write(_deepEquals);
+      result.add(_deepEquals);
     }
-    var formatter = new DartFormatter();
+    final library = new Library((b) => b.body.addAll(result));
+    final emitter = new DartEmitter(new Allocator.simplePrefixing());
     buildStep.writeAsString(buildStep.inputId.changeExtension('.dart'),
-        formatter.format(result.toString()));
+        new DartFormatter().format('${library.accept(emitter)}'));
   }
 }
 
-const _deepEquals = '''
+const _deepEquals = const Code('''
 _deepEquals(dynamic left, dynamic right) {
   if (left is List && right is List) {
     var leftLength = left.length;
@@ -47,4 +49,4 @@ _deepEquals(dynamic left, dynamic right) {
   }
   return left == right;
 }
-''';
+''');

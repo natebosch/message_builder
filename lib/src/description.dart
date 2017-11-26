@@ -1,7 +1,9 @@
+import 'package:code_builder/code_builder.dart';
+
 const _primitives = const ['String', 'int', 'bool', 'dynamic'];
 
 abstract class Description {
-  String get implementation;
+  Iterable<Code> get implementation;
   bool get hasListField;
   factory Description.parse(String name, Map params) {
     if (params.containsKey('enumValues')) {
@@ -73,10 +75,11 @@ class EnumType implements Description {
   bool get hasListField => false;
 
   @override
-  String get implementation {
+  Iterable<Code> get implementation {
     var instantiations =
         values.map((v) => '${v.name} = const $name._(${v.wireId});');
-    return '''
+    return [
+      new Code('''
   class $name {
     ${instantiations.map((i) => 'static const $i').join('\n')}
     final $wireType _value;
@@ -89,7 +92,8 @@ class EnumType implements Description {
     }
     $wireType toJson() => _value;
   }
-  ''';
+  ''')
+    ];
   }
 }
 
@@ -112,13 +116,14 @@ class SubclassedMessage implements Description {
   bool get hasListField => subclasses.any((m) => m.hasListField);
 
   @override
-  String get implementation {
+  Iterable<Code> get implementation {
     var selection = new StringBuffer();
     for (var key in subclassSelections.keys) {
       var ctor = 'new ${subclassSelections[key]}.fromJson(params)';
       selection.writeln('if (selectBy == $key) return $ctor;');
     }
-    return '''
+    return [
+      new Code('''
   abstract class $name {
     factory $name.fromJson(Map params) {
       var selectBy = params["$subclassBy"];
@@ -129,7 +134,8 @@ class SubclassedMessage implements Description {
   }
 
   ${subclasses.map((c) => c.implementation).join('\n')}
-  ''';
+  ''')
+    ];
   }
 }
 
@@ -150,14 +156,15 @@ class Message implements Description {
   bool get hasListField => fields.any((f) => f.type is ListFieldType);
 
   @override
-  String get implementation {
+  Iterable<Code> get implementation {
     final finalDeclarations = fields.map((f) => 'final ${f.declaration}');
     var implementStatement = parent == null ? '' : 'implements $parent';
     final parentFieldInitializer =
         parentField == null ? '' : 'final $parentField = $parentFieldToken;';
     final parentFieldJson =
         parentField == null ? '' : '"$parentField": $parentFieldToken,';
-    return '''
+    return [
+      new Code('''
   class $name $implementStatement {
     $parentFieldInitializer
     ${finalDeclarations.join('\n')}
@@ -190,7 +197,8 @@ class Message implements Description {
 
     $_builderName._();
   }
-  ''';
+  ''')
+    ];
   }
 
   String get _equality {
