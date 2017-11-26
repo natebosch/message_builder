@@ -1,13 +1,13 @@
 abstract class ParentMessage {
   factory ParentMessage.fromJson(Map params) {
-    var selectBy = params["selectField"];
+    final selectBy = params['selectField'];
     if (selectBy == "firstValue") return new FirstChildMessage.fromJson(params);
     if (selectBy == "secondValue")
       return new SecondChildMessage.fromJson(params);
     if (selectBy == "thirdValue") return new ThirdChildMessage.fromJson(params);
-
     throw new ArgumentError('Could not match ParentMessage for $selectBy');
   }
+
   Map toJson();
 }
 

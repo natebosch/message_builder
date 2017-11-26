@@ -140,22 +140,34 @@ class SubclassedMessage implements Description {
 
   @override
   Iterable<Spec> get implementation {
-    var selection = new StringBuffer();
-    for (var key in subclassSelections.keys) {
-      var ctor = 'new ${subclassSelections[key]}.fromJson(params)';
-      selection.writeln('if (selectBy == $key) return $ctor;');
+    final selection = <Code>[
+      refer('params')
+          .index(literalString(subclassBy))
+          .assignFinal('selectBy')
+          .statement
+    ];
+    for (final key in subclassSelections.keys) {
+      final ctor = 'new ${subclassSelections[key]}.fromJson(params)';
+      selection.add(new Code('if (selectBy == $key) return $ctor;'));
     }
+    selection.add(new Code(
+        "throw new ArgumentError('Could not match $name for \$selectBy');"));
+    final fromJson = new Constructor((b) => b
+      ..factory = true
+      ..name = 'fromJson'
+      ..requiredParameters.add((new Parameter((b) => b
+        ..type = refer('Map')
+        ..name = 'params')))
+      ..body = new Block.of(selection));
+    final toJson = new Method((b) => b
+      ..returns = refer('Map')
+      ..name = 'toJson');
     return [
-      new Code('''
-  abstract class $name {
-    factory $name.fromJson(Map params) {
-      var selectBy = params["$subclassBy"];
-      $selection
-      throw new ArgumentError('Could not match $name for \$selectBy');
-    }
-    Map toJson();
-  }
-  ''')
+      new Class((b) => b
+        ..abstract = true
+        ..name = name
+        ..constructors.add(fromJson)
+        ..methods.add(toJson))
     ]..addAll(subclasses.expand((c) => c.implementation));
   }
 }
