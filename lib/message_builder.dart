@@ -19,7 +19,7 @@ class MessageBuilder implements Builder {
   Future build(BuildStep buildStep) async {
     final descriptions =
         loadYaml(await buildStep.readAsString(buildStep.inputId));
-    final result = <Code>[];
+    final result = <Spec>[];
     var hasList = false;
     for (final name in descriptions.keys.toList()..sort()) {
       final description = new Description.parse(name, descriptions[name]);

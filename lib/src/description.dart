@@ -3,7 +3,7 @@ import 'package:code_builder/code_builder.dart';
 const _primitives = const ['String', 'int', 'bool', 'dynamic'];
 
 abstract class Description {
-  Iterable<Code> get implementation;
+  Iterable<Spec> get implementation;
   bool get hasListField;
   factory Description.parse(String name, Map params) {
     if (params.containsKey('enumValues')) {
@@ -69,40 +69,62 @@ FieldType _parseFieldType(dynamic /*String|Map*/ field) {
 
 class EnumType implements Description {
   final String name;
-  final String wireType;
+  final Reference wireType;
   final Iterable<EnumValue> values;
-  EnumType(this.name, this.wireType, this.values);
+  EnumType(this.name, String wireType, this.values)
+      : wireType = refer(wireType);
   @override
   bool get hasListField => false;
 
   @override
-  Iterable<Code> get implementation {
-    var instantiations =
-        values.map((v) => '${v.name} = const $name._(${v.wireId});');
+  Iterable<Spec> get implementation {
+    final constValues = values.map((v) => new Field((b) => b
+      ..static = true
+      ..modifier = FieldModifier.constant
+      ..name = v.name
+      ..assignment = refer(name).constInstanceNamed('_', [v.wireId]).code));
+    final valueField = new Field((b) => b
+      ..modifier = FieldModifier.final$
+      ..type = wireType
+      ..name = '_value');
+    final valueMap = new Map<Expression, Expression>.fromIterable(values,
+        key: (v) => v.wireId, value: (v) => refer(name).property(v.name));
+    final fromJson = new Constructor((b) => b
+      ..factory = true
+      ..name = 'fromJson'
+      ..requiredParameters.add(new Parameter((b) => b
+        ..name = 'value'
+        ..type = wireType))
+      ..body = new Block.of([
+        literalConstMap(valueMap).assignConst('values').statement,
+        refer('values').index(refer('value')).returned.statement
+      ]));
+    final unnamed = new Constructor((b) => b
+      ..constant = true
+      ..name = '_'
+      ..requiredParameters.add(new Parameter((b) => b..name = 'this._value')));
+    final toJson = new Method((b) => b
+      ..returns = wireType
+      ..name = 'toJson'
+      ..lambda = true
+      ..body = refer('_value').code);
     return [
-      new Code('''
-  class $name {
-    ${instantiations.map((i) => 'static const $i').join('\n')}
-    final $wireType _value;
-    const $name._(this._value);
-    factory $name.fromJson($wireType value) {
-      const values = const {
-        ${values.map((v) => '${v.wireId}: $name.${v.name}').join(',\n')}
-      };
-      return values[value];
-    }
-    $wireType toJson() => _value;
-  }
-  ''')
+      new Class((b) => b
+        ..name = name
+        ..fields.addAll(constValues)
+        ..fields.add(valueField)
+        ..constructors.add(fromJson)
+        ..constructors.add(unnamed)
+        ..methods.add(toJson))
     ];
   }
 }
 
 class EnumValue {
   final String name;
-  final dynamic /*String|int*/ wireValue;
-  EnumValue(this.name, this.wireValue);
-  String get wireId => (wireValue is String) ? '"$wireValue"' : '$wireValue';
+  final Expression wireId;
+  EnumValue(this.name, dynamic /*String|int*/ wireValue)
+      : wireId = literal(wireValue);
 }
 
 class SubclassedMessage implements Description {
@@ -117,7 +139,7 @@ class SubclassedMessage implements Description {
   bool get hasListField => subclasses.any((m) => m.hasListField);
 
   @override
-  Iterable<Code> get implementation {
+  Iterable<Spec> get implementation {
     var selection = new StringBuffer();
     for (var key in subclassSelections.keys) {
       var ctor = 'new ${subclassSelections[key]}.fromJson(params)';
@@ -155,7 +177,7 @@ class Message implements Description {
   bool get hasListField => fields.any((f) => f.type is ListFieldType);
 
   @override
-  Iterable<Code> get implementation {
+  Iterable<Spec> get implementation {
     final finalDeclarations = fields.map((f) => 'final ${f.declaration}');
     var implementStatement = parent == null ? '' : 'implements $parent';
     final parentFieldInitializer =
