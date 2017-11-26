@@ -1,4 +1,4 @@
-SomeMessage:
+SomeListMessage:
   stringList:
     listType: String
   intList:

@@ -1,15 +1,15 @@
-class SomeMessage {
+class SomeListMessage {
   final List<int> intList;
   final List<String> stringList;
 
-  SomeMessage._(this.intList, this.stringList);
-  factory SomeMessage(void init(SomeMessage$Builder b)) {
-    var b = new SomeMessage$Builder._();
+  SomeListMessage._(this.intList, this.stringList);
+  factory SomeListMessage(void init(SomeListMessage$Builder b)) {
+    var b = new SomeListMessage$Builder._();
     init(b);
-    return new SomeMessage._(b.intList, b.stringList);
+    return new SomeListMessage._(b.intList, b.stringList);
   }
 
-  factory SomeMessage.fromJson(Map params) => new SomeMessage._(
+  factory SomeListMessage.fromJson(Map params) => new SomeListMessage._(
       params.containsKey("intList") ? params["intList"] : null,
       params.containsKey("stringList") ? params["stringList"] : null);
 
@@ -17,8 +17,8 @@ class SomeMessage {
 
   @override
   bool operator ==(Object other) {
-    if (other is! SomeMessage) return false;
-    var o = other as SomeMessage;
+    if (other is! SomeListMessage) return false;
+    var o = other as SomeListMessage;
     if (!_deepEquals(intList, o.intList)) return false;
     if (!_deepEquals(stringList, o.stringList)) return false;
     return true;
@@ -38,11 +38,11 @@ class SomeMessage {
   }
 }
 
-class SomeMessage$Builder {
+class SomeListMessage$Builder {
   List<int> intList;
   List<String> stringList;
 
-  SomeMessage$Builder._();
+  SomeListMessage$Builder._();
 }
 
 _deepEquals(dynamic left, dynamic right) {

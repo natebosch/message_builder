@@ -3,3 +3,6 @@ SomeEnum:
   enumValues:
     someValue: 1
     anotherValue: 2
+
+MessageUsingEnum:
+  enumField: SomeEnum
