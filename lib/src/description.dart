@@ -1,6 +1,8 @@
 import 'package:code_builder/code_builder.dart';
 
-const _primitives = const ['String', 'int', 'bool', 'dynamic'];
+import 'equality.dart';
+import 'fields.dart';
+import 'hash_code.dart';
 
 abstract class Description {
   Iterable<Spec> get implementation;
@@ -14,8 +16,8 @@ abstract class Description {
       return _parseSubclassedMessage(name, params);
     }
     var fields = params.containsKey('fields')
-        ? _parseFields(params['fields'])
-        : _parseFields(params);
+        ? MessageField.parse(params['fields'])
+        : MessageField.parse(params);
     return new Message(name, fields);
   }
 }
@@ -23,7 +25,7 @@ abstract class Description {
 Description _parseSubclassedMessage(String name, Map params) {
   var parentField = params['subclassBy'];
   var subclasses = <Message>[];
-  var subclassSelections = <String, String>{};
+  var subclassSelections = <Expression, String>{};
   var descriptions = params['subclasses'];
   for (var subclass in descriptions.keys.toList()..sort()) {
     var description = descriptions[subclass];
@@ -31,10 +33,8 @@ Description _parseSubclassedMessage(String name, Map params) {
     if (description.containsKey('fields')) {
       fields.addAll(description['fields']);
     }
-    var parentFieldToken = description['selectOn'] is String
-        ? '"${description['selectOn']}"'
-        : '${description.selectOn}';
-    subclasses.add(new Message(subclass, _parseFields(fields), name,
+    var parentFieldToken = literal(description['selectOn']);
+    subclasses.add(new Message(subclass, MessageField.parse(fields), name,
         parentField.keys.single, parentFieldToken));
     subclassSelections[parentFieldToken] = subclass;
   }
@@ -45,26 +45,6 @@ Description _parseSubclassedMessage(String name, Map params) {
 Iterable<EnumValue> _parseEnumValues(Map values) {
   var names = values.keys.toList()..sort();
   return names.map((name) => new EnumValue(name, values[name]));
-}
-
-List<MessageField> _parseFields(Map fields) {
-  var names = fields.keys.toList()..sort();
-  return names
-      .map((name) => new MessageField(name, _parseFieldType(fields[name])))
-      .toList();
-}
-
-FieldType _parseFieldType(dynamic /*String|Map*/ field) {
-  if (field is String) {
-    if (_primitives.contains(field)) return new PrimitiveFieldType(field);
-    return new MessageFieldType(field);
-  }
-  if (field is Map) {
-    if (field.containsKey('listType')) {
-      return new ListFieldType(_parseFieldType(field['listType']));
-    }
-  }
-  throw 'Unhandled field type [$field]';
 }
 
 class EnumType implements Description {
@@ -131,7 +111,7 @@ class SubclassedMessage implements Description {
   final String name;
   final List<Message> subclasses;
   final String subclassBy;
-  final Map<String, String> subclassSelections;
+  final Map<Expression, String> subclassSelections;
   SubclassedMessage(
       this.name, this.subclasses, this.subclassBy, this.subclassSelections);
 
@@ -177,11 +157,9 @@ class Message implements Description {
   final List<MessageField> fields;
   final String parent;
   final String parentField;
-  final String parentFieldToken;
+  final Expression parentFieldToken;
   Message(this.name, this.fields,
       [this.parent, this.parentField, this.parentFieldToken]);
-
-  Iterable<String> get _fieldNames => fields.map((f) => f.name);
 
   String get _builderName => '$name\$Builder';
 
@@ -190,173 +168,87 @@ class Message implements Description {
 
   @override
   Iterable<Spec> get implementation {
-    final finalDeclarations = fields.map((f) => 'final ${f.declaration}');
-    var implementStatement = parent == null ? '' : 'implements $parent';
-    final parentFieldInitializer =
-        parentField == null ? '' : 'final $parentField = $parentFieldToken;';
-    final parentFieldJson =
-        parentField == null ? '' : '"$parentField": $parentFieldToken,';
-    return [
-      new Code('''
-  class $name $implementStatement {
-    $parentFieldInitializer
-    ${finalDeclarations.join('\n')}
-
-    $_ctors
-
-    Map toJson() => {$parentFieldJson
-      ${fields.map((f) => f.toJson).join(', ')}};
-
-    @override
-    $_equality
-
-    @override
-    int get hashCode {
-      int hash = 0;
-      for(var field in [${_fieldNames.join(', ')}]) {
-        hash = 0x1fffffff & (hash + field.hashCode);
-        hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-        hash ^= hash >> 6;
-      }
-      hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-      hash = hash ^ (hash >> 11);
-      return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+    final fieldDeclarations = fields
+        .map((f) => f.declaration)
+        .map((d) => d.rebuild((b) => b.modifier = FieldModifier.final$))
+        .toList();
+    if (parentField != null) {
+      fieldDeclarations.add(new Field((b) => b
+        ..modifier = FieldModifier.final$
+        ..name = parentField
+        ..assignment = parentFieldToken.code));
     }
-
-  }
-
-  class $_builderName {
-    ${fields.map((f) => f.declaration).join('\n')}
-
-    $_builderName._();
-  }
-  ''')
+    final toJsonMap = new Map<Expression, Expression>.fromIterable(fields,
+        key: (field) => literalString(field.name),
+        value: (field) => field.type.toJson(refer(field.name)));
+    if (parentField != null) {
+      toJsonMap[literalString(parentField)] = parentFieldToken;
+    }
+    final toJson = new Method((b) => b
+      ..returns = refer('Map')
+      ..name = 'toJson'
+      ..lambda = true
+      ..body = literalMap(toJsonMap).code);
+    final implements = parent == null ? <Reference>[] : [refer(parent)];
+    var clazz = new Class((b) => b
+      ..name = name
+      ..implements.addAll(implements)
+      ..fields.addAll(fieldDeclarations)
+      ..constructors.addAll(_ctors)
+      ..methods.add(toJson)
+      ..methods.add(buildHashCode(fields))
+      ..methods.add(buildEquals(name, fields)));
+    var builder = new Class((b) => b
+      ..name = _builderName
+      ..fields.addAll(fields.map((f) => f.declaration))
+      ..constructors.add(new Constructor((b) => b..name = '_')));
+    return [
+      clazz,
+      builder,
     ];
   }
 
-  String get _equality {
-    if (fields.isEmpty) {
-      return 'bool operator==(Object other) => other is $name;';
-    }
-    final equalityChecks =
-        fields.map((f) => 'if(${f.equalityCheck('o')}) return false;');
-    return '''
-    bool operator==(Object other) {
-      if(other is! $name) return false;
-      var o = other as $name;
-      ${equalityChecks.join('\n')}
-      return true;
-    }
-    ''';
-  }
-
-  String get _ctors => fields.isNotEmpty
-      ? '''
-    $name._(${_fieldNames.map((f) => 'this.$f').join(',')});
-    factory $name(void init($_builderName b)) {
-      var b = new $_builderName._();
-      init(b);
-      return new $name._(${_fieldNames.map((f) => 'b.$f').join(', ')});
-    }
-
-    factory $name.fromJson(Map params) =>
-      new $name._(${fields.map((f) => f.fromParams).join(', ')});
-    '''
-      : '''
-      const $name();
-      const $name.fromJson([_]);
-    ''';
-}
-
-class MessageField {
-  final String name;
-  final FieldType type;
-  MessageField(this.name, this.type);
-  String get toJson => '"$name": $name${type.toJsonSuffix}';
-  String get fromParams {
-    var typeFromParams = type.fromParams('params["$name"]');
-    return 'params.containsKey("$name") ? $typeFromParams : null';
-  }
-
-  String get declaration => '${type.declaration} $name;';
-
-  String equalityCheck(String other) =>
-      type.equalityCheck(name, '$other.$name');
-}
-
-abstract class FieldType {
-  String get toJsonSuffix;
-  String fromParams(String name);
-  String get declaration;
-  bool get isPrimitive;
-  String equalityCheck(String leftToken, String rightToken);
-}
-
-class PrimitiveFieldType implements FieldType {
-  final String name;
-  PrimitiveFieldType(this.name);
-
-  @override
-  String get toJsonSuffix => '';
-
-  @override
-  String fromParams(String fieldValue) => fieldValue;
-
-  @override
-  String get declaration => '$name';
-
-  @override
-  bool get isPrimitive => true;
-
-  @override
-  String equalityCheck(String leftToken, String rightToken) =>
-      '$leftToken != $rightToken';
-}
-
-class MessageFieldType extends FieldType {
-  final String name;
-  MessageFieldType(this.name);
-
-  @override
-  String get toJsonSuffix => '?.toJson()';
-
-  @override
-  String fromParams(String fieldValue) => 'new $name.fromJson($fieldValue)';
-
-  @override
-  String get declaration => '$name';
-
-  @override
-  bool get isPrimitive => false;
-
-  @override
-  String equalityCheck(String leftToken, String rightToken) =>
-      '$leftToken != $rightToken';
-}
-
-class ListFieldType extends FieldType {
-  final FieldType typeArgument;
-  ListFieldType(this.typeArgument);
-
-  @override
-  String get toJsonSuffix {
-    if (typeArgument.isPrimitive) return '';
-    return '?.map((v) => v${typeArgument.toJsonSuffix})?.toList()';
-  }
-
-  @override
-  String fromParams(String fieldValue) {
-    if (typeArgument.isPrimitive) return fieldValue;
-    return '$fieldValue.map((v) => ${typeArgument.fromParams('v')}).toList()';
-  }
-
-  @override
-  String get declaration => 'List<${typeArgument.declaration}>';
-
-  @override
-  bool get isPrimitive => typeArgument.isPrimitive;
-
-  @override
-  String equalityCheck(String leftToken, String rightToken) =>
-      '!_deepEquals($leftToken, $rightToken)';
+  Iterable<Constructor> get _ctors => fields.isNotEmpty
+      ? [
+          new Constructor((b) => b
+            ..name = '_'
+            ..requiredParameters.addAll(fields
+                .map((f) => new Parameter((b) => b..name = 'this.${f.name}')))),
+          new Constructor((b) => b
+            ..factory = true
+            ..requiredParameters.add(new Parameter((b) => b
+              ..type = new FunctionType((b) => b
+                ..returnType = refer('void')
+                ..requiredParameters.add(refer(_builderName)))
+              ..name = 'init'))
+            ..body = new Block.of([
+              refer(_builderName)
+                  .newInstanceNamed('_', [])
+                  .assignFinal('b')
+                  .statement,
+              refer('init').call([refer('b')]).statement,
+              refer(name)
+                  .newInstanceNamed(
+                      '_', fields.map((f) => refer('b').property(f.name)))
+                  .returned
+                  .statement,
+            ])),
+          new Constructor((b) => b
+            ..factory = true
+            ..name = 'fromJson'
+            ..lambda = true
+            ..requiredParameters.add(new Parameter((b) => b
+              ..type = refer('Map')
+              ..name = 'params'))
+            ..body = refer(name)
+                .newInstanceNamed('_', fields.map((f) => f.fromParams))
+                .code),
+        ]
+      : [
+          new Constructor((b) => b..constant = true),
+          new Constructor((b) => b
+            ..constant = true
+            ..name = 'fromJson'
+            ..optionalParameters.add(new Parameter((b) => b..name = '_')))
+        ];
 }

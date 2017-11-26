@@ -1,19 +1,34 @@
 class SomeListMessage {
-  final List<int> intList;
-  final List<String> stringList;
-
   SomeListMessage._(this.intList, this.stringList);
-  factory SomeListMessage(void init(SomeListMessage$Builder b)) {
-    var b = new SomeListMessage$Builder._();
+
+  factory SomeListMessage(void Function(SomeListMessage$Builder) init) {
+    final b = new SomeListMessage$Builder._();
     init(b);
     return new SomeListMessage._(b.intList, b.stringList);
   }
 
   factory SomeListMessage.fromJson(Map params) => new SomeListMessage._(
-      params.containsKey("intList") ? params["intList"] : null,
-      params.containsKey("stringList") ? params["stringList"] : null);
+      params.containsKey('intList') ? params['intList'] : null,
+      params.containsKey('stringList') ? params['stringList'] : null);
 
-  Map toJson() => {"intList": intList, "stringList": stringList};
+  final List<int> intList;
+
+  final List<String> stringList;
+
+  Map toJson() => {'intList': intList, 'stringList': stringList};
+  @override
+  int get hashCode {
+    var hash = 0;
+    hash = 0x1fffffff & (hash + intList.hashCode);
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    hash ^= hash >> 6;
+    hash = 0x1fffffff & (hash + stringList.hashCode);
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    hash ^= hash >> 6;
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
 
   @override
   bool operator ==(Object other) {
@@ -23,26 +38,14 @@ class SomeListMessage {
     if (!_deepEquals(stringList, o.stringList)) return false;
     return true;
   }
-
-  @override
-  int get hashCode {
-    int hash = 0;
-    for (var field in [intList, stringList]) {
-      hash = 0x1fffffff & (hash + field.hashCode);
-      hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-      hash ^= hash >> 6;
-    }
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
 }
 
 class SomeListMessage$Builder {
-  List<int> intList;
-  List<String> stringList;
-
   SomeListMessage$Builder._();
+
+  List<int> intList;
+
+  List<String> stringList;
 }
 
 _deepEquals(dynamic left, dynamic right) {
