@@ -95,5 +95,14 @@ _deepEquals(dynamic left, dynamic right) {
     }
     return true;
   }
+  if (left is Map && right is Map) {
+    var leftLength = left.length;
+    var rightLength = right.length;
+    if (leftLength != rightLength) return false;
+    for (final key in left.keys) {
+      if (!_deepEquals(left[key], right[key])) return false;
+    }
+    return true;
+  }
   return left == right;
 }

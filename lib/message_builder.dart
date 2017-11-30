@@ -20,13 +20,13 @@ class MessageBuilder implements Builder {
     final descriptions =
         loadYaml(await buildStep.readAsString(buildStep.inputId));
     final result = <Spec>[];
-    var hasList = false;
+    var hasCollection = false;
     for (final name in descriptions.keys.toList()..sort()) {
       final description = new Description.parse(name, descriptions[name]);
-      if (description.hasListField) hasList = true;
+      if (description.hasCollectionField) hasCollection = true;
       result.addAll(description.implementation);
     }
-    if (hasList) {
+    if (hasCollection) {
       result.add(_deepEquals);
     }
     final library = new Library((b) => b.body.addAll(result));
@@ -44,6 +44,15 @@ _deepEquals(dynamic left, dynamic right) {
     if (leftLength != rightLength) return false;
     for(int i = 0; i < leftLength; i++) {
       if(!_deepEquals(left[i], right[i])) return false;
+    }
+    return true;
+  }
+  if (left is Map && right is Map) {
+    var leftLength = left.length;
+    var rightLength = right.length;
+    if(leftLength != rightLength) return false;
+    for(final key in left.keys) {
+      if(!_deepEquals(left[key], right[key])) return false;
     }
     return true;
   }

@@ -47,6 +47,9 @@ abstract class FieldType {
       if (field.containsKey('listType')) {
         return new ListFieldType(new FieldType.parse(field['listType']));
       }
+      if (field.containsKey('mapType')) {
+        return new MapFieldType(new FieldType.parse(field['mapType']));
+      }
     }
     throw 'Unhandled field type [$field]';
   }
@@ -131,6 +134,48 @@ class ListFieldType implements FieldType {
   Reference get type => new TypeReference((b) => b
     ..symbol = 'List'
     ..types.add(typeArgument.type));
+
+  @override
+  bool get isPrimitive => typeArgument.isPrimitive;
+
+  @override
+  String equalityCheck(String leftToken, String rightToken) =>
+      '!_deepEquals($leftToken, $rightToken)';
+}
+
+class MapFieldType implements FieldType {
+  final FieldType typeArgument;
+  MapFieldType(this.typeArgument);
+
+  @override
+  Expression toJson(Expression e) {
+    if (typeArgument.isPrimitive) return e;
+    final toJsonClosure = new Method((b) => b
+      ..lambda = true
+      ..requiredParameters.add((new Parameter((b) => b..name = 'v')))
+      ..body = typeArgument.toJson(e.index(refer('v'))).code).closure;
+    return e.equalTo(literalNull).conditional(
+        literalNull,
+        refer('Map').newInstanceNamed(
+            'fromIterable', [e.property('keys')], {'value': toJsonClosure}));
+  }
+
+  @override
+  Expression fromParams(Expression fieldValue) {
+    if (typeArgument.isPrimitive) return fieldValue;
+    final fromJsonClosure = new Method((b) => b
+          ..lambda = true
+          ..requiredParameters.add(new Parameter((b) => b..name = 'v'))
+          ..body = typeArgument.fromParams(fieldValue.index(refer('v'))).code)
+        .closure;
+    return refer('Map').newInstanceNamed('fromIterable',
+        [fieldValue.property('keys')], {'value': fromJsonClosure});
+  }
+
+  @override
+  Reference get type => new TypeReference((b) => b
+    ..symbol = 'Map'
+    ..types.addAll([refer('String'), typeArgument.type]));
 
   @override
   bool get isPrimitive => typeArgument.isPrimitive;

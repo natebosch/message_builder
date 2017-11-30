@@ -1,0 +1,142 @@
+class AnotherMessage {
+  AnotherMessage._(this.innerMessageMap);
+
+  factory AnotherMessage(void Function(AnotherMessage$Builder) init) {
+    final b = new AnotherMessage$Builder._();
+    init(b);
+    return new AnotherMessage._(b.innerMessageMap);
+  }
+
+  factory AnotherMessage.fromJson(Map params) => new AnotherMessage._(
+      params.containsKey('innerMessageMap') ? params['innerMessageMap'] : null);
+
+  final Map<String, String> innerMessageMap;
+
+  Map toJson() => {'innerMessageMap': innerMessageMap};
+  @override
+  int get hashCode {
+    var hash = 0;
+    hash = 0x1fffffff & (hash + innerMessageMap.hashCode);
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    hash ^= hash >> 6;
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! AnotherMessage) return false;
+    var o = other as AnotherMessage;
+    if (!_deepEquals(innerMessageMap, o.innerMessageMap)) return false;
+    return true;
+  }
+}
+
+class AnotherMessage$Builder {
+  AnotherMessage$Builder._();
+
+  Map<String, String> innerMessageMap;
+}
+
+class SomeMapMessage {
+  SomeMapMessage._(this.intMap, this.listMap, this.mapMap, this.messageMap);
+
+  factory SomeMapMessage(void Function(SomeMapMessage$Builder) init) {
+    final b = new SomeMapMessage$Builder._();
+    init(b);
+    return new SomeMapMessage._(b.intMap, b.listMap, b.mapMap, b.messageMap);
+  }
+
+  factory SomeMapMessage.fromJson(Map params) => new SomeMapMessage._(
+      params.containsKey('intMap') ? params['intMap'] : null,
+      params.containsKey('listMap') ? params['listMap'] : null,
+      params.containsKey('mapMap') ? params['mapMap'] : null,
+      params.containsKey('messageMap')
+          ? new Map.fromIterable(params['messageMap'].keys,
+              value: (v) =>
+                  new AnotherMessage.fromJson(params['messageMap'][v]))
+          : null);
+
+  final Map<String, int> intMap;
+
+  final Map<String, List<int>> listMap;
+
+  final Map<String, Map<String, String>> mapMap;
+
+  final Map<String, AnotherMessage> messageMap;
+
+  Map toJson() => {
+        'intMap': intMap,
+        'listMap': listMap,
+        'mapMap': mapMap,
+        'messageMap': messageMap == null
+            ? null
+            : new Map.fromIterable(messageMap.keys,
+                value: (v) => messageMap[v]?.toJson())
+      };
+  @override
+  int get hashCode {
+    var hash = 0;
+    hash = 0x1fffffff & (hash + intMap.hashCode);
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    hash ^= hash >> 6;
+    hash = 0x1fffffff & (hash + listMap.hashCode);
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    hash ^= hash >> 6;
+    hash = 0x1fffffff & (hash + mapMap.hashCode);
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    hash ^= hash >> 6;
+    hash = 0x1fffffff & (hash + messageMap.hashCode);
+    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+    hash ^= hash >> 6;
+    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+    hash = hash ^ (hash >> 11);
+    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (other is! SomeMapMessage) return false;
+    var o = other as SomeMapMessage;
+    if (!_deepEquals(intMap, o.intMap)) return false;
+    if (!_deepEquals(listMap, o.listMap)) return false;
+    if (!_deepEquals(mapMap, o.mapMap)) return false;
+    if (!_deepEquals(messageMap, o.messageMap)) return false;
+    return true;
+  }
+}
+
+class SomeMapMessage$Builder {
+  SomeMapMessage$Builder._();
+
+  Map<String, int> intMap;
+
+  Map<String, List<int>> listMap;
+
+  Map<String, Map<String, String>> mapMap;
+
+  Map<String, AnotherMessage> messageMap;
+}
+
+_deepEquals(dynamic left, dynamic right) {
+  if (left is List && right is List) {
+    var leftLength = left.length;
+    var rightLength = right.length;
+    if (leftLength != rightLength) return false;
+    for (int i = 0; i < leftLength; i++) {
+      if (!_deepEquals(left[i], right[i])) return false;
+    }
+    return true;
+  }
+  if (left is Map && right is Map) {
+    var leftLength = left.length;
+    var rightLength = right.length;
+    if (leftLength != rightLength) return false;
+    for (final key in left.keys) {
+      if (!_deepEquals(left[key], right[key])) return false;
+    }
+    return true;
+  }
+  return left == right;
+}

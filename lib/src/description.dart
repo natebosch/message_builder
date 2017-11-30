@@ -6,7 +6,7 @@ import 'hash_code.dart';
 
 abstract class Description {
   Iterable<Spec> get implementation;
-  bool get hasListField;
+  bool get hasCollectionField;
   factory Description.parse(String name, Map params) {
     if (params.containsKey('enumValues')) {
       return new EnumType(
@@ -54,7 +54,7 @@ class EnumType implements Description {
   EnumType(this.name, String wireType, this.values)
       : wireType = refer(wireType);
   @override
-  bool get hasListField => false;
+  bool get hasCollectionField => false;
 
   @override
   Iterable<Spec> get implementation {
@@ -116,7 +116,7 @@ class SubclassedMessage implements Description {
       this.name, this.subclasses, this.subclassBy, this.subclassSelections);
 
   @override
-  bool get hasListField => subclasses.any((m) => m.hasListField);
+  bool get hasCollectionField => subclasses.any((m) => m.hasCollectionField);
 
   @override
   Iterable<Spec> get implementation {
@@ -164,7 +164,8 @@ class Message implements Description {
   String get _builderName => '$name\$Builder';
 
   @override
-  bool get hasListField => fields.any((f) => f.type is ListFieldType);
+  bool get hasCollectionField =>
+      fields.any((f) => f.type is ListFieldType || f.type is MapFieldType);
 
   @override
   Iterable<Spec> get implementation {

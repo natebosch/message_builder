@@ -1,6 +1,7 @@
 import 'package:test/test.dart';
 
 import 'goldens/list_field.dart';
+import 'goldens/map_field.dart';
 import 'goldens/message.dart';
 import 'goldens/nested_in_list.dart';
 import 'goldens/nested_message.dart';
@@ -173,5 +174,105 @@ void main() {
       var message = new ThirdChildMessage();
       expect(message.toJson(), {'selectField': 'thirdValue'});
     });
+  });
+
+  group('map fields', () {
+    test('deserialize', () {
+      var serialized = {
+        'intMap': {'a': 1},
+        'messageMap': {
+          'b': {
+            'innerMessageMap': {'foo': 'bar'}
+          }
+        },
+        'listMap': {
+          'c': [1, 2]
+        },
+        'mapMap': {
+          'd': {'e': 'f'}
+        }
+      };
+      expect(
+          new SomeMapMessage.fromJson(serialized),
+          new SomeMapMessage((b) => b
+            ..intMap = {'a': 1}
+            ..messageMap = {
+              'b':
+                  new AnotherMessage((b) => b..innerMessageMap = {'foo': 'bar'})
+            }
+            ..listMap = {
+              'c': [1, 2]
+            }
+            ..mapMap = {
+              'd': {'e': 'f'}
+            }));
+    });
+
+    test('serialize', () {
+      var message = new SomeMapMessage((b) => b
+        ..intMap = {'a': 1}
+        ..messageMap = {
+          'b': new AnotherMessage((b) => b..innerMessageMap = {'foo': 'bar'})
+        }
+        ..listMap = {
+          'c': [1, 2]
+        }
+        ..mapMap = {
+          'd': {'e': 'f'}
+        });
+      expect(message.toJson(), {
+        'intMap': {'a': 1},
+        'messageMap': {
+          'b': {
+            'innerMessageMap': {'foo': 'bar'}
+          }
+        },
+        'listMap': {
+          'c': [1, 2]
+        },
+        'mapMap': {
+          'd': {'e': 'f'}
+        }
+      });
+    });
+
+    test('hashCode', () {
+      var message = new SomeMapMessage((b) => b
+        ..intMap = {'a': 1}
+        ..messageMap = {
+          'b': new AnotherMessage((b) => b..innerMessageMap = {'foo': 'bar'})
+        }
+        ..listMap = {
+          'c': [1, 2]
+        }
+        ..mapMap = {
+          'd': {'e': 'f'}
+        });
+      var messageSame = new SomeMapMessage((b) => b
+        ..intMap = {'a': 1}
+        ..messageMap = {
+          'b': new AnotherMessage((b) => b..innerMessageMap = {'foo': 'bar'})
+        }
+        ..listMap = {
+          'c': [1, 2]
+        }
+        ..mapMap = {
+          'd': {'e': 'f'}
+        });
+      var messageDifferent = new SomeMapMessage((b) => b
+        ..intMap = {'a': 1}
+        ..messageMap = {
+          'b': new AnotherMessage(
+              (b) => b..innerMessageMap = {'foo': 'different'})
+        }
+        ..listMap = {
+          'c': [1, 2]
+        }
+        ..mapMap = {
+          'd': {'e': 'f'}
+        });
+      expect(message.hashCode, messageSame.hashCode);
+      expect(message.hashCode, isNot(messageDifferent.hashCode));
+    }, skip: 'Hashcode is broken for collections');
   });
 }
