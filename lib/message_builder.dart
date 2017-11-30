@@ -26,6 +26,7 @@ class MessageBuilder implements Builder {
       if (description.hasCollectionField) hasCollection = true;
       result.addAll(description.implementation);
     }
+    result.add(_hashMethods);
     if (hasCollection) {
       result.add(_deepEquals);
     }
@@ -57,5 +58,31 @@ _deepEquals(dynamic left, dynamic right) {
     return true;
   }
   return left == right;
+}
+''');
+
+const _hashMethods = const Code('''
+int _hashCombine(int hash, int value) {
+  hash = 0x1fffffff & (hash + value);
+  hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+  return hash ^ (hash >> 6);
+}
+int _hashComplete(int hash) {
+  hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+  hash = hash ^ (hash >> 11);
+  return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+}
+int _deepHashCode(dynamic value) {
+  if (value is List) {
+    return value.map(_deepHashCode).reduce(_hashCombine);
+  }
+  if (value is Map) {
+    return (value.keys
+            .map((key) => _hashCombine(key.hashCode, _deepHashCode(value[key])))
+            .toList(growable: false)
+              ..sort())
+      .reduce(_hashCombine);
+  }
+  return value.hashCode;
 }
 ''');

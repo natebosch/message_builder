@@ -75,7 +75,7 @@ void main() {
         ..intList = [3, 4]);
       expect(message.hashCode, messageSame.hashCode);
       expect(message.hashCode, isNot(messageDifferent.hashCode));
-    }, skip: 'Hashcode is broken for collections');
+    });
   });
 
   group('nested message', () {
@@ -158,7 +158,7 @@ void main() {
         ]);
       expect(message.hashCode, messageSame.hashCode);
       expect(message.hashCode, isNot(messageDifferent.hashCode));
-    }, skip: 'Hashcode is broken for collections');
+    });
   });
 
   group('subclassed message', () {
@@ -238,7 +238,7 @@ void main() {
 
     test('hashCode', () {
       var message = new SomeMapMessage((b) => b
-        ..intMap = {'a': 1}
+        ..intMap = {'a': 1, 'z': 2}
         ..messageMap = {
           'b': new AnotherMessage((b) => b..innerMessageMap = {'foo': 'bar'})
         }
@@ -249,7 +249,7 @@ void main() {
           'd': {'e': 'f'}
         });
       var messageSame = new SomeMapMessage((b) => b
-        ..intMap = {'a': 1}
+        ..intMap = {'z': 2, 'a': 1}
         ..messageMap = {
           'b': new AnotherMessage((b) => b..innerMessageMap = {'foo': 'bar'})
         }
@@ -273,6 +273,6 @@ void main() {
         });
       expect(message.hashCode, messageSame.hashCode);
       expect(message.hashCode, isNot(messageDifferent.hashCode));
-    }, skip: 'Hashcode is broken for collections');
+    });
   });
 }

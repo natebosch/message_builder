@@ -19,15 +19,9 @@ class SomeListMessage {
   @override
   int get hashCode {
     var hash = 0;
-    hash = 0x1fffffff & (hash + intList.hashCode);
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    hash ^= hash >> 6;
-    hash = 0x1fffffff & (hash + stringList.hashCode);
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    hash ^= hash >> 6;
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+    hash = _hashCombine(hash, _deepHashCode(intList));
+    hash = _hashCombine(hash, _deepHashCode(stringList));
+    return _hashComplete(hash);
   }
 
   @override
@@ -46,6 +40,32 @@ class SomeListMessage$Builder {
   List<int> intList;
 
   List<String> stringList;
+}
+
+int _hashCombine(int hash, int value) {
+  hash = 0x1fffffff & (hash + value);
+  hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
+  return hash ^ (hash >> 6);
+}
+
+int _hashComplete(int hash) {
+  hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
+  hash = hash ^ (hash >> 11);
+  return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
+}
+
+int _deepHashCode(dynamic value) {
+  if (value is List) {
+    return value.map(_deepHashCode).reduce(_hashCombine);
+  }
+  if (value is Map) {
+    return (value.keys
+            .map((key) => _hashCombine(key.hashCode, _deepHashCode(value[key])))
+            .toList(growable: false)
+              ..sort())
+        .reduce(_hashCombine);
+  }
+  return value.hashCode;
 }
 
 _deepEquals(dynamic left, dynamic right) {
