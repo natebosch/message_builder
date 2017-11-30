@@ -105,7 +105,7 @@ class ListFieldType implements FieldType {
     final toJsonClosure = new Method((b) => b
       ..lambda = true
       ..requiredParameters.add((new Parameter((b) => b..name = 'v')))
-      ..body = typeArgument.toJson((refer('b'))).code).closure;
+      ..body = typeArgument.toJson((refer('v'))).code).closure;
     return e
         .nullSafeProperty('map')
         .call([toJsonClosure])

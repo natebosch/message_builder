@@ -2,6 +2,7 @@ import 'package:test/test.dart';
 
 import 'goldens/list_field.dart';
 import 'goldens/message.dart';
+import 'goldens/nested_in_list.dart';
 import 'goldens/nested_message.dart';
 import 'goldens/subclassed_message.dart';
 
@@ -110,6 +111,53 @@ void main() {
       expect(message.hashCode, messageSame.hashCode);
       expect(message.hashCode, isNot(messageDifferent.hashCode));
     });
+  });
+
+  group('nested message in list', () {
+    test('serialize', () {
+      var serialized = {
+        'innerField': [
+          {'anotherField': 'foo'},
+          {'anotherField': 'bar'}
+        ],
+      };
+      expect(
+          new OuterMessageWithList.fromJson(serialized),
+          new OuterMessageWithList((b) => b
+            ..innerField = [
+              new InnerMessageInList((b) => b..anotherField = 'foo'),
+              new InnerMessageInList((b) => b..anotherField = 'bar'),
+            ]));
+    });
+    test('deserialize', () {
+      var message = new OuterMessageWithList((b) => b
+        ..innerField = [
+          new InnerMessageInList((b) => b..anotherField = 'foo'),
+          new InnerMessageInList((b) => b..anotherField = 'bar')
+        ]);
+      expect(message.toJson(), {
+        'innerField': [
+          {'anotherField': 'foo'},
+          {'anotherField': 'bar'}
+        ]
+      });
+    });
+    test('hashcode', () {
+      var message = new OuterMessageWithList((b) => b
+        ..innerField = [
+          new InnerMessageInList((b) => b..anotherField = 'foo')
+        ]);
+      var messageSame = new OuterMessageWithList((b) => b
+        ..innerField = [
+          new InnerMessageInList((b) => b..anotherField = 'foo')
+        ]);
+      var messageDifferent = new OuterMessageWithList((b) => b
+        ..innerField = [
+          new InnerMessageInList((b) => b..anotherField = 'different')
+        ]);
+      expect(message.hashCode, messageSame.hashCode);
+      expect(message.hashCode, isNot(messageDifferent.hashCode));
+    }, skip: 'Hashcode is broken for collections');
   });
 
   group('subclassed message', () {
