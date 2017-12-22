@@ -7,6 +7,8 @@ import 'package:yaml/yaml.dart';
 
 import 'src/description.dart';
 
+Builder messageBuilder(_) => const MessageBuilder();
+
 class MessageBuilder implements Builder {
   const MessageBuilder();
 
