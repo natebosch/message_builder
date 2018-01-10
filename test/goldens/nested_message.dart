@@ -8,7 +8,9 @@ class InnerMessage {
   }
 
   factory InnerMessage.fromJson(Map params) => new InnerMessage._(
-      params.containsKey('anotherField') ? params['anotherField'] : null);
+      params.containsKey('anotherField') && params['anotherField'] != null
+          ? params['anotherField']
+          : null);
 
   final String anotherField;
 
@@ -45,10 +47,12 @@ class OuterMessage {
   }
 
   factory OuterMessage.fromJson(Map params) => new OuterMessage._(
-      params.containsKey('innerField')
+      params.containsKey('innerField') && params['innerField'] != null
           ? new InnerMessage.fromJson(params['innerField'])
           : null,
-      params.containsKey('stringField') ? params['stringField'] : null);
+      params.containsKey('stringField') && params['stringField'] != null
+          ? params['stringField']
+          : null);
 
   final InnerMessage innerField;
 

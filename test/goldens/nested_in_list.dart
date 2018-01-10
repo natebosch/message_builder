@@ -8,7 +8,9 @@ class InnerMessageInList {
   }
 
   factory InnerMessageInList.fromJson(Map params) => new InnerMessageInList._(
-      params.containsKey('anotherField') ? params['anotherField'] : null);
+      params.containsKey('anotherField') && params['anotherField'] != null
+          ? params['anotherField']
+          : null);
 
   final String anotherField;
 
@@ -46,11 +48,12 @@ class OuterMessageWithList {
   }
 
   factory OuterMessageWithList.fromJson(Map params) =>
-      new OuterMessageWithList._(params.containsKey('innerField')
-          ? params['innerField']
-              .map((v) => new InnerMessageInList.fromJson(v))
-              .toList()
-          : null);
+      new OuterMessageWithList._(
+          params.containsKey('innerField') && params['innerField'] != null
+              ? params['innerField']
+                  .map((v) => new InnerMessageInList.fromJson(v))
+                  .toList()
+              : null);
 
   final List<InnerMessageInList> innerField;
 

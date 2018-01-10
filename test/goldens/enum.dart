@@ -7,8 +7,8 @@ class MessageUsingEnum {
     return new MessageUsingEnum._(b.enumField);
   }
 
-  factory MessageUsingEnum.fromJson(Map params) =>
-      new MessageUsingEnum._(params.containsKey('enumField')
+  factory MessageUsingEnum.fromJson(Map params) => new MessageUsingEnum._(
+      params.containsKey('enumField') && params['enumField'] != null
           ? new SomeEnum.fromJson(params['enumField'])
           : null);
 

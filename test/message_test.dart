@@ -112,6 +112,14 @@ void main() {
       expect(message.hashCode, messageSame.hashCode);
       expect(message.hashCode, isNot(messageDifferent.hashCode));
     });
+    test('handles omitted keys', () {
+      expect(new OuterMessage.fromJson({}), new OuterMessage((b) {}));
+    });
+    test('handles keys explicitly set to null', () {
+      expect(
+          new OuterMessage.fromJson({'innerField': null, 'stringField': null}),
+          new OuterMessage((b) {}));
+    });
   });
 
   group('nested message in list', () {

@@ -21,7 +21,9 @@ class FirstChildMessage implements ParentMessage {
   }
 
   factory FirstChildMessage.fromJson(Map params) => new FirstChildMessage._(
-      params.containsKey('firstField') ? params['firstField'] : null);
+      params.containsKey('firstField') && params['firstField'] != null
+          ? params['firstField']
+          : null);
 
   final int firstField;
 
@@ -60,7 +62,9 @@ class SecondChildMessage implements ParentMessage {
   }
 
   factory SecondChildMessage.fromJson(Map params) => new SecondChildMessage._(
-      params.containsKey('secondField') ? params['secondField'] : null);
+      params.containsKey('secondField') && params['secondField'] != null
+          ? params['secondField']
+          : null);
 
   final String secondField;
 

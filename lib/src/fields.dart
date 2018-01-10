@@ -10,7 +10,9 @@ class MessageField {
     final toType = type.fromParams(paramValue);
     return refer('params')
         .property('containsKey')
-        .call([literalString(name)]).conditional(toType, literalNull);
+        .call([literalString(name)])
+        .and(refer('params').index(literalString(name)).notEqualTo(literalNull))
+        .conditional(toType, literalNull);
   }
 
   Field get declaration => new Field((b) => b

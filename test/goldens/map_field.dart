@@ -8,7 +8,9 @@ class AnotherMessage {
   }
 
   factory AnotherMessage.fromJson(Map params) => new AnotherMessage._(
-      params.containsKey('innerMessageMap') ? params['innerMessageMap'] : null);
+      params.containsKey('innerMessageMap') && params['innerMessageMap'] != null
+          ? params['innerMessageMap']
+          : null);
 
   final Map<String, String> innerMessageMap;
 
@@ -45,10 +47,16 @@ class SomeMapMessage {
   }
 
   factory SomeMapMessage.fromJson(Map params) => new SomeMapMessage._(
-      params.containsKey('intMap') ? params['intMap'] : null,
-      params.containsKey('listMap') ? params['listMap'] : null,
-      params.containsKey('mapMap') ? params['mapMap'] : null,
-      params.containsKey('messageMap')
+      params.containsKey('intMap') && params['intMap'] != null
+          ? params['intMap']
+          : null,
+      params.containsKey('listMap') && params['listMap'] != null
+          ? params['listMap']
+          : null,
+      params.containsKey('mapMap') && params['mapMap'] != null
+          ? params['mapMap']
+          : null,
+      params.containsKey('messageMap') && params['messageMap'] != null
           ? new Map.fromIterable(params['messageMap'].keys,
               value: (v) =>
                   new AnotherMessage.fromJson(params['messageMap'][v]))

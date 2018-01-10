@@ -8,8 +8,12 @@ class SomeMessage {
   }
 
   factory SomeMessage.fromJson(Map params) => new SomeMessage._(
-      params.containsKey('intField') ? params['intField'] : null,
-      params.containsKey('stringField') ? params['stringField'] : null);
+      params.containsKey('intField') && params['intField'] != null
+          ? params['intField']
+          : null,
+      params.containsKey('stringField') && params['stringField'] != null
+          ? params['stringField']
+          : null);
 
   final int intField;
 

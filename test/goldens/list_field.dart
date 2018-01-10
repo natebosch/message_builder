@@ -8,8 +8,12 @@ class SomeListMessage {
   }
 
   factory SomeListMessage.fromJson(Map params) => new SomeListMessage._(
-      params.containsKey('intList') ? params['intList'] : null,
-      params.containsKey('stringList') ? params['stringList'] : null);
+      params.containsKey('intList') && params['intList'] != null
+          ? params['intList']
+          : null,
+      params.containsKey('stringList') && params['stringList'] != null
+          ? params['stringList']
+          : null);
 
   final List<int> intList;
 
