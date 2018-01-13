@@ -1,5 +1,5 @@
 name: message_builder
-version: 0.1.3-dev
+version: 0.1.3
 description: Generate serializable Dart classes from a schema
 author: Nate Bosch <nbosch1@gmail.com>
 homepage: https://github.com/natebosch/message_builder

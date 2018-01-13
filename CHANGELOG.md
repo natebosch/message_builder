@@ -1,6 +1,7 @@
-## 0.1.3-dev
+## 0.1.3
 
 - Upgrade to `code_builder` version 3.0
+- Add default for `generate_for` to avoid applying to `pubspec.yaml` by default.
 
 ## 0.1.2
 

@@ -15,3 +15,5 @@ builders:
     build_extensions: {".yaml": [".dart"]}
     auto_apply: dependents
     build_to: source
+    defaults:
+      generate_for: ["lib/**"]

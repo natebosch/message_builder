@@ -24,6 +24,10 @@ class MessageBuilder implements Builder {
     final result = <Spec>[];
     var hasCollection = false;
     for (final name in descriptions.keys.toList()..sort()) {
+      if (descriptions[name] is! Map) {
+        log.severe('Skipping non-map entry: $name');
+        continue;
+      }
       final description = new Description.parse(name, descriptions[name]);
       if (description.hasCollectionField) hasCollection = true;
       result.addAll(description.implementation);
