@@ -1,3 +1,7 @@
+## 0.1.3-dev
+
+- Upgrade to `code_builder` version 3.0
+
 ## 0.1.2
 
 - Handle keys explicitly set to `null` as if they were missing.
