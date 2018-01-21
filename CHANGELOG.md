@@ -1,3 +1,7 @@
+## 0.1.3+1
+
+- Allow `package:build` version `0.12.x`.
+
 ## 0.1.3
 
 - Upgrade to `code_builder` version 3.0
