@@ -19,7 +19,19 @@ class SomeListMessage {
 
   final List<String> stringList;
 
-  Map toJson() => {'intList': intList, 'stringList': stringList};
+  Map toJson() {
+    final $$result = {};
+    final $intList = intList;
+    if ($intList != null) {
+      $$result['intList'] = $intList;
+    }
+    final $stringList = stringList;
+    if ($stringList != null) {
+      $$result['stringList'] = $stringList;
+    }
+    return $$result;
+  }
+
   @override
   int get hashCode {
     var hash = 0;

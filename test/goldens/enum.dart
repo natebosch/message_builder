@@ -14,7 +14,15 @@ class MessageUsingEnum {
 
   final SomeEnum enumField;
 
-  Map toJson() => {'enumField': enumField?.toJson()};
+  Map toJson() {
+    final $$result = {};
+    final $enumField = enumField?.toJson();
+    if ($enumField != null) {
+      $$result['enumField'] = $enumField;
+    }
+    return $$result;
+  }
+
   @override
   int get hashCode {
     var hash = 0;

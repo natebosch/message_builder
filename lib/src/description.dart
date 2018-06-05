@@ -179,17 +179,13 @@ class Message implements Description {
         ..name = parentField
         ..assignment = parentFieldToken.code));
     }
-    final toJsonMap = new Map<Expression, Expression>.fromIterable(fields,
-        key: (field) => literalString(field.name),
+    final fieldExpressions = new Map<String, Expression>.fromIterable(fields,
+        key: (field) => field.name,
         value: (field) => field.type.toJson(refer(field.name)));
     if (parentField != null) {
-      toJsonMap[literalString(parentField)] = parentFieldToken;
+      fieldExpressions[parentField] = parentFieldToken;
     }
-    final toJson = new Method((b) => b
-      ..returns = refer('Map')
-      ..name = 'toJson'
-      ..lambda = true
-      ..body = literalMap(toJsonMap).code);
+    final toJson = _toJsonMethod(fieldExpressions);
     final implements = parent == null ? <Reference>[] : [refer(parent)];
     var clazz = new Class((b) => b
       ..name = name
@@ -253,3 +249,20 @@ class Message implements Description {
             ..optionalParameters.add(new Parameter((b) => b..name = '_')))
         ];
 }
+
+Method _toJsonMethod(Map<String, Expression> fields) => new Method((b) => b
+  ..returns = refer('Map')
+  ..name = 'toJson'
+  ..body = new Block.of([
+    literalMap({}).assignFinal(r'$$result').statement,
+  ].followedBy(fields.keys
+      .expand((f) => [
+            fields[f].assignFinal('\$$f').statement,
+            new Code('if (\$$f != null) {'),
+            refer(r'$$result')
+                .index(literalString(f))
+                .assign(refer('\$$f'))
+                .statement,
+            new Code('}'),
+          ])
+      .followedBy([refer(r'$$result').returned.statement]))));

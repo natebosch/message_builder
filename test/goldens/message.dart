@@ -19,7 +19,19 @@ class SomeMessage {
 
   final String stringField;
 
-  Map toJson() => {'intField': intField, 'stringField': stringField};
+  Map toJson() {
+    final $$result = {};
+    final $intField = intField;
+    if ($intField != null) {
+      $$result['intField'] = $intField;
+    }
+    final $stringField = stringField;
+    if ($stringField != null) {
+      $$result['stringField'] = $stringField;
+    }
+    return $$result;
+  }
+
   @override
   int get hashCode {
     var hash = 0;
