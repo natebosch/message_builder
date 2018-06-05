@@ -14,7 +14,15 @@ class AnotherMessage {
 
   final Map<String, String> innerMessageMap;
 
-  Map toJson() => {'innerMessageMap': innerMessageMap};
+  Map toJson() {
+    final $$result = {};
+    final $innerMessageMap = innerMessageMap;
+    if ($innerMessageMap != null) {
+      $$result['innerMessageMap'] = $innerMessageMap;
+    }
+    return $$result;
+  }
+
   @override
   int get hashCode {
     var hash = 0;
@@ -70,15 +78,30 @@ class SomeMapMessage {
 
   final Map<String, AnotherMessage> messageMap;
 
-  Map toJson() => {
-        'intMap': intMap,
-        'listMap': listMap,
-        'mapMap': mapMap,
-        'messageMap': messageMap == null
-            ? null
-            : new Map.fromIterable(messageMap.keys,
-                value: (v) => messageMap[v]?.toJson())
-      };
+  Map toJson() {
+    final $$result = {};
+    final $intMap = intMap;
+    if ($intMap != null) {
+      $$result['intMap'] = $intMap;
+    }
+    final $listMap = listMap;
+    if ($listMap != null) {
+      $$result['listMap'] = $listMap;
+    }
+    final $mapMap = mapMap;
+    if ($mapMap != null) {
+      $$result['mapMap'] = $mapMap;
+    }
+    final $messageMap = messageMap == null
+        ? null
+        : new Map.fromIterable(messageMap.keys,
+            value: (v) => messageMap[v]?.toJson());
+    if ($messageMap != null) {
+      $$result['messageMap'] = $messageMap;
+    }
+    return $$result;
+  }
+
   @override
   int get hashCode {
     var hash = 0;

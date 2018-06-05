@@ -29,7 +29,19 @@ class FirstChildMessage implements ParentMessage {
 
   final selectField = 'firstValue';
 
-  Map toJson() => {'firstField': firstField, 'selectField': 'firstValue'};
+  Map toJson() {
+    final $$result = {};
+    final $firstField = firstField;
+    if ($firstField != null) {
+      $$result['firstField'] = $firstField;
+    }
+    final $selectField = 'firstValue';
+    if ($selectField != null) {
+      $$result['selectField'] = $selectField;
+    }
+    return $$result;
+  }
+
   @override
   int get hashCode {
     var hash = 0;
@@ -70,7 +82,19 @@ class SecondChildMessage implements ParentMessage {
 
   final selectField = 'secondValue';
 
-  Map toJson() => {'secondField': secondField, 'selectField': 'secondValue'};
+  Map toJson() {
+    final $$result = {};
+    final $secondField = secondField;
+    if ($secondField != null) {
+      $$result['secondField'] = $secondField;
+    }
+    final $selectField = 'secondValue';
+    if ($selectField != null) {
+      $$result['selectField'] = $selectField;
+    }
+    return $$result;
+  }
+
   @override
   int get hashCode {
     var hash = 0;
@@ -100,7 +124,15 @@ class ThirdChildMessage implements ParentMessage {
 
   final selectField = 'thirdValue';
 
-  Map toJson() => {'selectField': 'thirdValue'};
+  Map toJson() {
+    final $$result = {};
+    final $selectField = 'thirdValue';
+    if ($selectField != null) {
+      $$result['selectField'] = $selectField;
+    }
+    return $$result;
+  }
+
   @override
   int get hashCode {
     var hash = 0;

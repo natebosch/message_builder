@@ -14,7 +14,15 @@ class InnerMessage {
 
   final String anotherField;
 
-  Map toJson() => {'anotherField': anotherField};
+  Map toJson() {
+    final $$result = {};
+    final $anotherField = anotherField;
+    if ($anotherField != null) {
+      $$result['anotherField'] = $anotherField;
+    }
+    return $$result;
+  }
+
   @override
   int get hashCode {
     var hash = 0;
@@ -58,8 +66,19 @@ class OuterMessage {
 
   final String stringField;
 
-  Map toJson() =>
-      {'innerField': innerField?.toJson(), 'stringField': stringField};
+  Map toJson() {
+    final $$result = {};
+    final $innerField = innerField?.toJson();
+    if ($innerField != null) {
+      $$result['innerField'] = $innerField;
+    }
+    final $stringField = stringField;
+    if ($stringField != null) {
+      $$result['stringField'] = $stringField;
+    }
+    return $$result;
+  }
+
   @override
   int get hashCode {
     var hash = 0;
