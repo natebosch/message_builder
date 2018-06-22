@@ -1,3 +1,7 @@
+## 0.1.3+2
+
+- Allow `package:build_config` version `0.3.x`.
+
 ## 0.1.3+1
 
 - Allow `package:build` version `0.12.x`.
