@@ -38,6 +38,7 @@ abstract class FieldType {
   Expression fromParams(Expression fieldValue);
   Reference get type;
   bool get isPrimitive;
+  bool get canCastInCollection;
   String equalityCheck(String leftToken, String rightToken);
 
   factory FieldType.parse(dynamic /*String|Map*/ field) {
@@ -71,7 +72,10 @@ class PrimitiveFieldType implements FieldType {
   Reference get type => refer(name);
 
   @override
-  bool get isPrimitive => true;
+  final isPrimitive = true;
+
+  @override
+  final canCastInCollection = true;
 
   @override
   String equalityCheck(String leftToken, String rightToken) =>
@@ -93,7 +97,10 @@ class MessageFieldType implements FieldType {
   Reference get type => refer(name);
 
   @override
-  bool get isPrimitive => false;
+  final isPrimitive = false;
+
+  @override
+  final canCastInCollection = false;
 
   @override
   String equalityCheck(String leftToken, String rightToken) =>
@@ -120,12 +127,17 @@ class ListFieldType implements FieldType {
 
   @override
   Expression fromParams(Expression fieldValue) {
-    if (typeArgument.isPrimitive) return fieldValue;
+    if (typeArgument.canCastInCollection)
+      return fieldValue
+          .asA(refer('List'))
+          .property('cast')
+          .call([], {}, [typeArgument.type]);
     final fromJsonClosure = new Method((b) => b
       ..lambda = true
       ..requiredParameters.add(new Parameter((b) => b..name = 'v'))
       ..body = typeArgument.fromParams(refer('v')).code).closure;
     return fieldValue
+        .asA(refer('List'))
         .property('map')
         .call([fromJsonClosure])
         .property('toList')
@@ -141,6 +153,9 @@ class ListFieldType implements FieldType {
   bool get isPrimitive => typeArgument.isPrimitive;
 
   @override
+  final canCastInCollection = false;
+
+  @override
   String equalityCheck(String leftToken, String rightToken) =>
       '!_deepEquals($leftToken, $rightToken)';
 }
@@ -152,26 +167,36 @@ class MapFieldType implements FieldType {
   @override
   Expression toJson(Expression e) {
     if (typeArgument.isPrimitive) return e;
-    final toJsonClosure = new Method((b) => b
+    final toMapEntryClosure = new Method((b) => b
       ..lambda = true
-      ..requiredParameters.add((new Parameter((b) => b..name = 'v')))
-      ..body = typeArgument.toJson(e.index(refer('v'))).code).closure;
-    return e.equalTo(literalNull).conditional(
-        literalNull,
-        refer('Map').newInstanceNamed(
-            'fromIterable', [e.property('keys')], {'value': toJsonClosure}));
+      ..requiredParameters.add(new Parameter((b) => b..name = 'k'))
+      ..requiredParameters.add(new Parameter((b) => b..name = 'v'))
+      ..body = refer('MapEntry').newInstance(
+          [refer('k'), typeArgument.toJson(refer('v'))],
+          {},
+          [refer('String'), refer('dynamic')]).code).closure;
+    return e.nullSafeProperty('map').call([toMapEntryClosure]);
   }
 
   @override
   Expression fromParams(Expression fieldValue) {
-    if (typeArgument.isPrimitive) return fieldValue;
-    final fromJsonClosure = new Method((b) => b
-          ..lambda = true
-          ..requiredParameters.add(new Parameter((b) => b..name = 'v'))
-          ..body = typeArgument.fromParams(fieldValue.index(refer('v'))).code)
-        .closure;
-    return refer('Map').newInstanceNamed('fromIterable',
-        [fieldValue.property('keys')], {'value': fromJsonClosure});
+    if (typeArgument.canCastInCollection)
+      return fieldValue
+          .asA(refer('Map'))
+          .property('cast')
+          .call([], {}, [refer('String'), typeArgument.type]);
+    final toMapEntryClosure = new Method((b) => b
+      ..lambda = true
+      ..requiredParameters.add(new Parameter((b) => b..name = 'k'))
+      ..requiredParameters.add(new Parameter((b) => b..name = 'v'))
+      ..body = refer('MapEntry').newInstance(
+          [refer('k'), typeArgument.fromParams(refer('v'))],
+          {},
+          [refer('String'), typeArgument.type]).code).closure;
+    return fieldValue
+        .asA(refer('Map'))
+        .property('map')
+        .call([toMapEntryClosure]);
   }
 
   @override
@@ -181,6 +206,9 @@ class MapFieldType implements FieldType {
 
   @override
   bool get isPrimitive => typeArgument.isPrimitive;
+
+  @override
+  final canCastInCollection = false;
 
   @override
   String equalityCheck(String leftToken, String rightToken) =>

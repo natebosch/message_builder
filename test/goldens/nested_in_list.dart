@@ -50,7 +50,7 @@ class OuterMessageWithList {
   factory OuterMessageWithList.fromJson(Map params) =>
       new OuterMessageWithList._(
           params.containsKey('innerField') && params['innerField'] != null
-              ? params['innerField']
+              ? (params['innerField'] as List)
                   .map((v) => new InnerMessageInList.fromJson(v))
                   .toList()
               : null);

@@ -1,3 +1,10 @@
+## 0.1.3+3
+
+- Cast to `Iterable` before calling `map` when parsing from json to get a
+  correct reified list type.
+- Switch to `Map.map` instead of `new Map.fromIterable`.
+- Cast primitive typed `List` and `Map` instances to a corrected reified type.
+
 ## 0.1.3+2
 
 - Allow `package:build_config` version `0.3.x`.

@@ -9,7 +9,7 @@ class AnotherMessage {
 
   factory AnotherMessage.fromJson(Map params) => new AnotherMessage._(
       params.containsKey('innerMessageMap') && params['innerMessageMap'] != null
-          ? params['innerMessageMap']
+          ? (params['innerMessageMap'] as Map).cast<String, String>()
           : null);
 
   final Map<String, String> innerMessageMap;
@@ -48,18 +48,21 @@ class SomeMapMessage {
 
   factory SomeMapMessage.fromJson(Map params) => new SomeMapMessage._(
       params.containsKey('intMap') && params['intMap'] != null
-          ? params['intMap']
+          ? (params['intMap'] as Map).cast<String, int>()
           : null,
       params.containsKey('listMap') && params['listMap'] != null
-          ? params['listMap']
+          ? (params['listMap'] as Map).map((k, v) =>
+              new MapEntry<String, List<int>>(k, (v as List).cast<int>()))
           : null,
       params.containsKey('mapMap') && params['mapMap'] != null
-          ? params['mapMap']
+          ? (params['mapMap'] as Map).map((k, v) =>
+              new MapEntry<String, Map<String, String>>(
+                  k, (v as Map).cast<String, String>()))
           : null,
       params.containsKey('messageMap') && params['messageMap'] != null
-          ? new Map.fromIterable(params['messageMap'].keys,
-              value: (v) =>
-                  new AnotherMessage.fromJson(params['messageMap'][v]))
+          ? (params['messageMap'] as Map).map((k, v) =>
+              new MapEntry<String, AnotherMessage>(
+                  k, new AnotherMessage.fromJson(v)))
           : null);
 
   final Map<String, int> intMap;
@@ -74,10 +77,8 @@ class SomeMapMessage {
         'intMap': intMap,
         'listMap': listMap,
         'mapMap': mapMap,
-        'messageMap': messageMap == null
-            ? null
-            : new Map.fromIterable(messageMap.keys,
-                value: (v) => messageMap[v]?.toJson())
+        'messageMap': messageMap
+            ?.map((k, v) => new MapEntry<String, dynamic>(k, v?.toJson()))
       };
   @override
   int get hashCode {

@@ -9,10 +9,10 @@ class SomeListMessage {
 
   factory SomeListMessage.fromJson(Map params) => new SomeListMessage._(
       params.containsKey('intList') && params['intList'] != null
-          ? params['intList']
+          ? (params['intList'] as List).cast<int>()
           : null,
       params.containsKey('stringList') && params['stringList'] != null
-          ? params['stringList']
+          ? (params['stringList'] as List).cast<String>()
           : null);
 
   final List<int> intList;
