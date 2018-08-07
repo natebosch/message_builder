@@ -7,17 +7,17 @@ import 'package:path/path.dart' as p;
 import 'package:message_builder/message_builder.dart';
 
 void main() {
-  const builder = const MessageBuilder();
+  const builder = MessageBuilder();
 
   group('goldens', () {
-    final goldenDir = new Directory('test/goldens/');
+    final goldenDir = Directory('test/goldens/');
     for (final item in goldenDir.listSync()) {
       if (!item.path.endsWith('.yaml') || item is! File) continue;
       final file = item as File;
       test(p.basename(file.path), () {
         final yamlContent = file.readAsStringSync();
         final dartFile =
-            new File(file.path.substring(0, file.path.length - 4) + 'dart');
+            File(file.path.substring(0, file.path.length - 4) + 'dart');
         final dartContent = dartFile.readAsStringSync();
         return testBuilder(builder, {
           'a|${p.basename(file.path)}': yamlContent

@@ -2,12 +2,12 @@ class AnotherMessage {
   AnotherMessage._(this.innerMessageMap);
 
   factory AnotherMessage(void Function(AnotherMessage$Builder) init) {
-    final b = new AnotherMessage$Builder._();
+    final b = AnotherMessage$Builder._();
     init(b);
-    return new AnotherMessage._(b.innerMessageMap);
+    return AnotherMessage._(b.innerMessageMap);
   }
 
-  factory AnotherMessage.fromJson(Map params) => new AnotherMessage._(
+  factory AnotherMessage.fromJson(Map params) => AnotherMessage._(
       params.containsKey('innerMessageMap') && params['innerMessageMap'] != null
           ? (params['innerMessageMap'] as Map).cast<String, String>()
           : null);
@@ -41,28 +41,27 @@ class SomeMapMessage {
   SomeMapMessage._(this.intMap, this.listMap, this.mapMap, this.messageMap);
 
   factory SomeMapMessage(void Function(SomeMapMessage$Builder) init) {
-    final b = new SomeMapMessage$Builder._();
+    final b = SomeMapMessage$Builder._();
     init(b);
-    return new SomeMapMessage._(b.intMap, b.listMap, b.mapMap, b.messageMap);
+    return SomeMapMessage._(b.intMap, b.listMap, b.mapMap, b.messageMap);
   }
 
-  factory SomeMapMessage.fromJson(Map params) => new SomeMapMessage._(
+  factory SomeMapMessage.fromJson(Map params) => SomeMapMessage._(
       params.containsKey('intMap') && params['intMap'] != null
           ? (params['intMap'] as Map).cast<String, int>()
           : null,
       params.containsKey('listMap') && params['listMap'] != null
-          ? (params['listMap'] as Map).map((k, v) =>
-              new MapEntry<String, List<int>>(k, (v as List).cast<int>()))
+          ? (params['listMap'] as Map).map(
+              (k, v) => MapEntry<String, List<int>>(k, (v as List).cast<int>()))
           : null,
       params.containsKey('mapMap') && params['mapMap'] != null
           ? (params['mapMap'] as Map).map((k, v) =>
-              new MapEntry<String, Map<String, String>>(
+              MapEntry<String, Map<String, String>>(
                   k, (v as Map).cast<String, String>()))
           : null,
       params.containsKey('messageMap') && params['messageMap'] != null
           ? (params['messageMap'] as Map).map((k, v) =>
-              new MapEntry<String, AnotherMessage>(
-                  k, new AnotherMessage.fromJson(v)))
+              MapEntry<String, AnotherMessage>(k, AnotherMessage.fromJson(v)))
           : null);
 
   final Map<String, int> intMap;
@@ -77,8 +76,8 @@ class SomeMapMessage {
         'intMap': intMap,
         'listMap': listMap,
         'mapMap': mapMap,
-        'messageMap': messageMap
-            ?.map((k, v) => new MapEntry<String, dynamic>(k, v?.toJson()))
+        'messageMap':
+            messageMap?.map((k, v) => MapEntry<String, dynamic>(k, v?.toJson()))
       };
   @override
   int get hashCode {

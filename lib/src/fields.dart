@@ -15,7 +15,7 @@ class MessageField {
         .conditional(toType, literalNull);
   }
 
-  Field get declaration => new Field((b) => b
+  Field get declaration => Field((b) => b
     ..type = type.type
     ..name = name);
 
@@ -25,13 +25,12 @@ class MessageField {
   static List<MessageField> parse(Map fields) {
     var names = fields.keys.toList()..sort();
     return names
-        .map(
-            (name) => new MessageField(name, new FieldType.parse(fields[name])))
+        .map((name) => MessageField(name, FieldType.parse(fields[name])))
         .toList();
   }
 }
 
-const _primitives = const ['String', 'int', 'bool', 'dynamic'];
+const _primitives = ['String', 'int', 'bool', 'dynamic'];
 
 abstract class FieldType {
   Expression toJson(Expression e);
@@ -43,15 +42,15 @@ abstract class FieldType {
 
   factory FieldType.parse(dynamic /*String|Map*/ field) {
     if (field is String) {
-      if (_primitives.contains(field)) return new PrimitiveFieldType(field);
-      return new MessageFieldType(field);
+      if (_primitives.contains(field)) return PrimitiveFieldType(field);
+      return MessageFieldType(field);
     }
     if (field is Map) {
       if (field.containsKey('listType')) {
-        return new ListFieldType(new FieldType.parse(field['listType']));
+        return ListFieldType(FieldType.parse(field['listType']));
       }
       if (field.containsKey('mapType')) {
-        return new MapFieldType(new FieldType.parse(field['mapType']));
+        return MapFieldType(FieldType.parse(field['mapType']));
       }
     }
     throw 'Unhandled field type [$field]';
@@ -114,9 +113,9 @@ class ListFieldType implements FieldType {
   @override
   Expression toJson(Expression e) {
     if (typeArgument.isPrimitive) return e;
-    final toJsonClosure = new Method((b) => b
+    final toJsonClosure = Method((b) => b
       ..lambda = true
-      ..requiredParameters.add((new Parameter((b) => b..name = 'v')))
+      ..requiredParameters.add((Parameter((b) => b..name = 'v')))
       ..body = typeArgument.toJson((refer('v'))).code).closure;
     return e
         .nullSafeProperty('map')
@@ -132,9 +131,9 @@ class ListFieldType implements FieldType {
           .asA(refer('List'))
           .property('cast')
           .call([], {}, [typeArgument.type]);
-    final fromJsonClosure = new Method((b) => b
+    final fromJsonClosure = Method((b) => b
       ..lambda = true
-      ..requiredParameters.add(new Parameter((b) => b..name = 'v'))
+      ..requiredParameters.add(Parameter((b) => b..name = 'v'))
       ..body = typeArgument.fromParams(refer('v')).code).closure;
     return fieldValue
         .asA(refer('List'))
@@ -145,7 +144,7 @@ class ListFieldType implements FieldType {
   }
 
   @override
-  Reference get type => new TypeReference((b) => b
+  Reference get type => TypeReference((b) => b
     ..symbol = 'List'
     ..types.add(typeArgument.type));
 
@@ -167,10 +166,10 @@ class MapFieldType implements FieldType {
   @override
   Expression toJson(Expression e) {
     if (typeArgument.isPrimitive) return e;
-    final toMapEntryClosure = new Method((b) => b
+    final toMapEntryClosure = Method((b) => b
       ..lambda = true
-      ..requiredParameters.add(new Parameter((b) => b..name = 'k'))
-      ..requiredParameters.add(new Parameter((b) => b..name = 'v'))
+      ..requiredParameters.add(Parameter((b) => b..name = 'k'))
+      ..requiredParameters.add(Parameter((b) => b..name = 'v'))
       ..body = refer('MapEntry').newInstance(
           [refer('k'), typeArgument.toJson(refer('v'))],
           {},
@@ -185,10 +184,10 @@ class MapFieldType implements FieldType {
           .asA(refer('Map'))
           .property('cast')
           .call([], {}, [refer('String'), typeArgument.type]);
-    final toMapEntryClosure = new Method((b) => b
+    final toMapEntryClosure = Method((b) => b
       ..lambda = true
-      ..requiredParameters.add(new Parameter((b) => b..name = 'k'))
-      ..requiredParameters.add(new Parameter((b) => b..name = 'v'))
+      ..requiredParameters.add(Parameter((b) => b..name = 'k'))
+      ..requiredParameters.add(Parameter((b) => b..name = 'v'))
       ..body = refer('MapEntry').newInstance(
           [refer('k'), typeArgument.fromParams(refer('v'))],
           {},
@@ -200,7 +199,7 @@ class MapFieldType implements FieldType {
   }
 
   @override
-  Reference get type => new TypeReference((b) => b
+  Reference get type => TypeReference((b) => b
     ..symbol = 'Map'
     ..types.addAll([refer('String'), typeArgument.type]));
 

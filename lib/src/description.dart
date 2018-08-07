@@ -9,7 +9,7 @@ abstract class Description {
   bool get hasCollectionField;
   factory Description.parse(String name, Map params) {
     if (params.containsKey('enumValues')) {
-      return new EnumType(
+      return EnumType(
           name, params['wireType'], _parseEnumValues(params['enumValues']));
     }
     if (params.containsKey('subclassBy')) {
@@ -18,7 +18,7 @@ abstract class Description {
     var fields = params.containsKey('fields')
         ? MessageField.parse(params['fields'])
         : MessageField.parse(params);
-    return new Message(name, fields);
+    return Message(name, fields);
   }
 }
 
@@ -34,17 +34,17 @@ Description _parseSubclassedMessage(String name, Map params) {
       fields.addAll(description['fields']);
     }
     var parentFieldToken = literal(description['selectOn']);
-    subclasses.add(new Message(subclass, MessageField.parse(fields), name,
+    subclasses.add(Message(subclass, MessageField.parse(fields), name,
         parentField.keys.single, parentFieldToken));
     subclassSelections[parentFieldToken] = subclass;
   }
-  return new SubclassedMessage(
+  return SubclassedMessage(
       name, subclasses, parentField.keys.single, subclassSelections);
 }
 
 Iterable<EnumValue> _parseEnumValues(Map values) {
   var names = values.keys.toList()..sort();
-  return names.map((name) => new EnumValue(name, values[name]));
+  return names.map((name) => EnumValue(name, values[name]));
 }
 
 class EnumType implements Description {
@@ -58,38 +58,38 @@ class EnumType implements Description {
 
   @override
   Iterable<Spec> get implementation {
-    final constValues = values.map((v) => new Field((b) => b
+    final constValues = values.map((v) => Field((b) => b
       ..static = true
       ..modifier = FieldModifier.constant
       ..name = v.name
       ..assignment = refer(name).constInstanceNamed('_', [v.wireId]).code));
-    final valueField = new Field((b) => b
+    final valueField = Field((b) => b
       ..modifier = FieldModifier.final$
       ..type = wireType
       ..name = '_value');
-    final valueMap = new Map<Expression, Expression>.fromIterable(values,
+    final valueMap = Map<Expression, Expression>.fromIterable(values,
         key: (v) => v.wireId, value: (v) => refer(name).property(v.name));
-    final fromJson = new Constructor((b) => b
+    final fromJson = Constructor((b) => b
       ..factory = true
       ..name = 'fromJson'
-      ..requiredParameters.add(new Parameter((b) => b
+      ..requiredParameters.add(Parameter((b) => b
         ..name = 'value'
         ..type = wireType))
-      ..body = new Block.of([
+      ..body = Block.of([
         literalConstMap(valueMap).assignConst('values').statement,
         refer('values').index(refer('value')).returned.statement
       ]));
-    final unnamed = new Constructor((b) => b
+    final unnamed = Constructor((b) => b
       ..constant = true
       ..name = '_'
-      ..requiredParameters.add(new Parameter((b) => b..name = 'this._value')));
-    final toJson = new Method((b) => b
+      ..requiredParameters.add(Parameter((b) => b..name = 'this._value')));
+    final toJson = Method((b) => b
       ..returns = wireType
       ..name = 'toJson'
       ..lambda = true
       ..body = refer('_value').code);
     return [
-      new Class((b) => b
+      Class((b) => b
         ..name = name
         ..fields.addAll(constValues)
         ..fields.add(valueField)
@@ -128,22 +128,22 @@ class SubclassedMessage implements Description {
     ];
     for (final key in subclassSelections.keys) {
       final ctor = 'new ${subclassSelections[key]}.fromJson(params)';
-      selection.add(new Code('if (selectBy == $key) return $ctor;'));
+      selection.add(Code('if (selectBy == $key) return $ctor;'));
     }
-    selection.add(new Code(
+    selection.add(Code(
         "throw new ArgumentError('Could not match $name for \$selectBy');"));
-    final fromJson = new Constructor((b) => b
+    final fromJson = Constructor((b) => b
       ..factory = true
       ..name = 'fromJson'
-      ..requiredParameters.add((new Parameter((b) => b
+      ..requiredParameters.add((Parameter((b) => b
         ..type = refer('Map')
         ..name = 'params')))
-      ..body = new Block.of(selection));
-    final toJson = new Method((b) => b
+      ..body = Block.of(selection));
+    final toJson = Method((b) => b
       ..returns = refer('Map')
       ..name = 'toJson');
     return [
-      new Class((b) => b
+      Class((b) => b
         ..abstract = true
         ..name = name
         ..constructors.add(fromJson)
@@ -174,24 +174,24 @@ class Message implements Description {
         .map((d) => d.rebuild((b) => b.modifier = FieldModifier.final$))
         .toList();
     if (parentField != null) {
-      fieldDeclarations.add(new Field((b) => b
+      fieldDeclarations.add(Field((b) => b
         ..modifier = FieldModifier.final$
         ..name = parentField
         ..assignment = parentFieldToken.code));
     }
-    final toJsonMap = new Map<Expression, Expression>.fromIterable(fields,
+    final toJsonMap = Map<Expression, Expression>.fromIterable(fields,
         key: (field) => literalString(field.name),
         value: (field) => field.type.toJson(refer(field.name)));
     if (parentField != null) {
       toJsonMap[literalString(parentField)] = parentFieldToken;
     }
-    final toJson = new Method((b) => b
+    final toJson = Method((b) => b
       ..returns = refer('Map')
       ..name = 'toJson'
       ..lambda = true
       ..body = literalMap(toJsonMap).code);
     final implements = parent == null ? <Reference>[] : [refer(parent)];
-    var clazz = new Class((b) => b
+    var clazz = Class((b) => b
       ..name = name
       ..implements.addAll(implements)
       ..fields.addAll(fieldDeclarations)
@@ -199,10 +199,10 @@ class Message implements Description {
       ..methods.add(toJson)
       ..methods.add(buildHashCode(fields))
       ..methods.add(buildEquals(name, fields)));
-    var builder = new Class((b) => b
+    var builder = Class((b) => b
       ..name = _builderName
       ..fields.addAll(fields.map((f) => f.declaration))
-      ..constructors.add(new Constructor((b) => b..name = '_')));
+      ..constructors.add(Constructor((b) => b..name = '_')));
     return [
       clazz,
       builder,
@@ -211,18 +211,18 @@ class Message implements Description {
 
   Iterable<Constructor> get _ctors => fields.isNotEmpty
       ? [
-          new Constructor((b) => b
+          Constructor((b) => b
             ..name = '_'
             ..requiredParameters.addAll(fields
-                .map((f) => new Parameter((b) => b..name = 'this.${f.name}')))),
-          new Constructor((b) => b
+                .map((f) => Parameter((b) => b..name = 'this.${f.name}')))),
+          Constructor((b) => b
             ..factory = true
-            ..requiredParameters.add(new Parameter((b) => b
-              ..type = new FunctionType((b) => b
+            ..requiredParameters.add(Parameter((b) => b
+              ..type = FunctionType((b) => b
                 ..returnType = refer('void')
                 ..requiredParameters.add(refer(_builderName)))
               ..name = 'init'))
-            ..body = new Block.of([
+            ..body = Block.of([
               refer(_builderName)
                   .newInstanceNamed('_', [])
                   .assignFinal('b')
@@ -234,11 +234,11 @@ class Message implements Description {
                   .returned
                   .statement,
             ])),
-          new Constructor((b) => b
+          Constructor((b) => b
             ..factory = true
             ..name = 'fromJson'
             ..lambda = true
-            ..requiredParameters.add(new Parameter((b) => b
+            ..requiredParameters.add(Parameter((b) => b
               ..type = refer('Map')
               ..name = 'params'))
             ..body = refer(name)
@@ -246,10 +246,10 @@ class Message implements Description {
                 .code),
         ]
       : [
-          new Constructor((b) => b..constant = true),
-          new Constructor((b) => b
+          Constructor((b) => b..constant = true),
+          Constructor((b) => b
             ..constant = true
             ..name = 'fromJson'
-            ..optionalParameters.add(new Parameter((b) => b..name = '_')))
+            ..optionalParameters.add(Parameter((b) => b..name = '_')))
         ];
 }

@@ -2,12 +2,12 @@ class InnerMessage {
   InnerMessage._(this.anotherField);
 
   factory InnerMessage(void Function(InnerMessage$Builder) init) {
-    final b = new InnerMessage$Builder._();
+    final b = InnerMessage$Builder._();
     init(b);
-    return new InnerMessage._(b.anotherField);
+    return InnerMessage._(b.anotherField);
   }
 
-  factory InnerMessage.fromJson(Map params) => new InnerMessage._(
+  factory InnerMessage.fromJson(Map params) => InnerMessage._(
       params.containsKey('anotherField') && params['anotherField'] != null
           ? params['anotherField']
           : null);
@@ -41,14 +41,14 @@ class OuterMessage {
   OuterMessage._(this.innerField, this.stringField);
 
   factory OuterMessage(void Function(OuterMessage$Builder) init) {
-    final b = new OuterMessage$Builder._();
+    final b = OuterMessage$Builder._();
     init(b);
-    return new OuterMessage._(b.innerField, b.stringField);
+    return OuterMessage._(b.innerField, b.stringField);
   }
 
-  factory OuterMessage.fromJson(Map params) => new OuterMessage._(
+  factory OuterMessage.fromJson(Map params) => OuterMessage._(
       params.containsKey('innerField') && params['innerField'] != null
-          ? new InnerMessage.fromJson(params['innerField'])
+          ? InnerMessage.fromJson(params['innerField'])
           : null,
       params.containsKey('stringField') && params['stringField'] != null
           ? params['stringField']

@@ -1,11 +1,10 @@
 abstract class ParentMessage {
   factory ParentMessage.fromJson(Map params) {
     final selectBy = params['selectField'];
-    if (selectBy == 'firstValue') return new FirstChildMessage.fromJson(params);
-    if (selectBy == 'secondValue')
-      return new SecondChildMessage.fromJson(params);
-    if (selectBy == 'thirdValue') return new ThirdChildMessage.fromJson(params);
-    throw new ArgumentError('Could not match ParentMessage for $selectBy');
+    if (selectBy == 'firstValue') return FirstChildMessage.fromJson(params);
+    if (selectBy == 'secondValue') return SecondChildMessage.fromJson(params);
+    if (selectBy == 'thirdValue') return ThirdChildMessage.fromJson(params);
+    throw ArgumentError('Could not match ParentMessage for $selectBy');
   }
 
   Map toJson();
@@ -15,12 +14,12 @@ class FirstChildMessage implements ParentMessage {
   FirstChildMessage._(this.firstField);
 
   factory FirstChildMessage(void Function(FirstChildMessage$Builder) init) {
-    final b = new FirstChildMessage$Builder._();
+    final b = FirstChildMessage$Builder._();
     init(b);
-    return new FirstChildMessage._(b.firstField);
+    return FirstChildMessage._(b.firstField);
   }
 
-  factory FirstChildMessage.fromJson(Map params) => new FirstChildMessage._(
+  factory FirstChildMessage.fromJson(Map params) => FirstChildMessage._(
       params.containsKey('firstField') && params['firstField'] != null
           ? params['firstField']
           : null);
@@ -56,12 +55,12 @@ class SecondChildMessage implements ParentMessage {
   SecondChildMessage._(this.secondField);
 
   factory SecondChildMessage(void Function(SecondChildMessage$Builder) init) {
-    final b = new SecondChildMessage$Builder._();
+    final b = SecondChildMessage$Builder._();
     init(b);
-    return new SecondChildMessage._(b.secondField);
+    return SecondChildMessage._(b.secondField);
   }
 
-  factory SecondChildMessage.fromJson(Map params) => new SecondChildMessage._(
+  factory SecondChildMessage.fromJson(Map params) => SecondChildMessage._(
       params.containsKey('secondField') && params['secondField'] != null
           ? params['secondField']
           : null);

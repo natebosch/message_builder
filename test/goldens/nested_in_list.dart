@@ -2,12 +2,12 @@ class InnerMessageInList {
   InnerMessageInList._(this.anotherField);
 
   factory InnerMessageInList(void Function(InnerMessageInList$Builder) init) {
-    final b = new InnerMessageInList$Builder._();
+    final b = InnerMessageInList$Builder._();
     init(b);
-    return new InnerMessageInList._(b.anotherField);
+    return InnerMessageInList._(b.anotherField);
   }
 
-  factory InnerMessageInList.fromJson(Map params) => new InnerMessageInList._(
+  factory InnerMessageInList.fromJson(Map params) => InnerMessageInList._(
       params.containsKey('anotherField') && params['anotherField'] != null
           ? params['anotherField']
           : null);
@@ -42,18 +42,17 @@ class OuterMessageWithList {
 
   factory OuterMessageWithList(
       void Function(OuterMessageWithList$Builder) init) {
-    final b = new OuterMessageWithList$Builder._();
+    final b = OuterMessageWithList$Builder._();
     init(b);
-    return new OuterMessageWithList._(b.innerField);
+    return OuterMessageWithList._(b.innerField);
   }
 
-  factory OuterMessageWithList.fromJson(Map params) =>
-      new OuterMessageWithList._(
-          params.containsKey('innerField') && params['innerField'] != null
-              ? (params['innerField'] as List)
-                  .map((v) => new InnerMessageInList.fromJson(v))
-                  .toList()
-              : null);
+  factory OuterMessageWithList.fromJson(Map params) => OuterMessageWithList._(
+      params.containsKey('innerField') && params['innerField'] != null
+          ? (params['innerField'] as List)
+              .map((v) => InnerMessageInList.fromJson(v))
+              .toList()
+          : null);
 
   final List<InnerMessageInList> innerField;
 

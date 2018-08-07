@@ -1,3 +1,7 @@
+## 0.1.3+4
+
+- Use the 2.0 stable SDK.
+
 ## 0.1.3+3
 
 - Cast to `Iterable` before calling `map` when parsing from json to get a

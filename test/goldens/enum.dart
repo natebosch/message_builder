@@ -2,14 +2,14 @@ class MessageUsingEnum {
   MessageUsingEnum._(this.enumField);
 
   factory MessageUsingEnum(void Function(MessageUsingEnum$Builder) init) {
-    final b = new MessageUsingEnum$Builder._();
+    final b = MessageUsingEnum$Builder._();
     init(b);
-    return new MessageUsingEnum._(b.enumField);
+    return MessageUsingEnum._(b.enumField);
   }
 
-  factory MessageUsingEnum.fromJson(Map params) => new MessageUsingEnum._(
+  factory MessageUsingEnum.fromJson(Map params) => MessageUsingEnum._(
       params.containsKey('enumField') && params['enumField'] != null
-          ? new SomeEnum.fromJson(params['enumField'])
+          ? SomeEnum.fromJson(params['enumField'])
           : null);
 
   final SomeEnum enumField;
@@ -39,15 +39,15 @@ class MessageUsingEnum$Builder {
 
 class SomeEnum {
   factory SomeEnum.fromJson(int value) {
-    const values = const {2: SomeEnum.anotherValue, 1: SomeEnum.someValue};
+    const values = {2: SomeEnum.anotherValue, 1: SomeEnum.someValue};
     return values[value];
   }
 
   const SomeEnum._(this._value);
 
-  static const anotherValue = const SomeEnum._(2);
+  static const anotherValue = SomeEnum._(2);
 
-  static const someValue = const SomeEnum._(1);
+  static const someValue = SomeEnum._(1);
 
   final int _value;
 

@@ -2,12 +2,12 @@ class SomeListMessage {
   SomeListMessage._(this.intList, this.stringList);
 
   factory SomeListMessage(void Function(SomeListMessage$Builder) init) {
-    final b = new SomeListMessage$Builder._();
+    final b = SomeListMessage$Builder._();
     init(b);
-    return new SomeListMessage._(b.intList, b.stringList);
+    return SomeListMessage._(b.intList, b.stringList);
   }
 
-  factory SomeListMessage.fromJson(Map params) => new SomeListMessage._(
+  factory SomeListMessage.fromJson(Map params) => SomeListMessage._(
       params.containsKey('intList') && params['intList'] != null
           ? (params['intList'] as List).cast<int>()
           : null,

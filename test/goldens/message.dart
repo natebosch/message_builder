@@ -2,12 +2,12 @@ class SomeMessage {
   SomeMessage._(this.intField, this.stringField);
 
   factory SomeMessage(void Function(SomeMessage$Builder) init) {
-    final b = new SomeMessage$Builder._();
+    final b = SomeMessage$Builder._();
     init(b);
-    return new SomeMessage._(b.intField, b.stringField);
+    return SomeMessage._(b.intField, b.stringField);
   }
 
-  factory SomeMessage.fromJson(Map params) => new SomeMessage._(
+  factory SomeMessage.fromJson(Map params) => SomeMessage._(
       params.containsKey('intField') && params['intField'] != null
           ? params['intField']
           : null,

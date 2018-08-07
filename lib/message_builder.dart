@@ -14,7 +14,7 @@ class MessageBuilder implements Builder {
 
   @override
   final buildExtensions = const {
-    '.yaml': const ['.dart']
+    '.yaml': ['.dart']
   };
 
   @override
@@ -28,7 +28,7 @@ class MessageBuilder implements Builder {
         log.severe('Skipping non-map entry: $name');
         continue;
       }
-      final description = new Description.parse(name, descriptions[name]);
+      final description = Description.parse(name, descriptions[name]);
       if (description.hasCollectionField) hasCollection = true;
       result.addAll(description.implementation);
     }
@@ -36,14 +36,14 @@ class MessageBuilder implements Builder {
     if (hasCollection) {
       result.add(_deepEquals);
     }
-    final library = new Library((b) => b.body.addAll(result));
-    final emitter = new DartEmitter(new Allocator.simplePrefixing());
+    final library = Library((b) => b.body.addAll(result));
+    final emitter = DartEmitter(Allocator.simplePrefixing());
     buildStep.writeAsString(buildStep.inputId.changeExtension('.dart'),
-        new DartFormatter().format('${library.accept(emitter)}'));
+        DartFormatter().format('${library.accept(emitter)}'));
   }
 }
 
-const _deepEquals = const Code('''
+const _deepEquals = Code('''
 _deepEquals(dynamic left, dynamic right) {
   if (left is List && right is List) {
     var leftLength = left.length;
@@ -67,7 +67,7 @@ _deepEquals(dynamic left, dynamic right) {
 }
 ''');
 
-const _hashMethods = const Code('''
+const _hashMethods = Code('''
 int _hashCombine(int hash, int value) {
   hash = 0x1fffffff & (hash + value);
   hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
