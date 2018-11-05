@@ -1,3 +1,7 @@
+## 0.1.3+5
+
+- Allow `build` versions `<2.0.0`.
+
 ## 0.1.3+4
 
 - Use the 2.0 stable SDK.
