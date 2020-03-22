@@ -1,4 +1,8 @@
-## 0.1.6-dev
+## 0.1.6
+
+- Use a chain of `&&` in `operator ==` methods. This fixes a problem where some
+  conditionals which were too long to fit on one line would violate
+  `curly_braces_in_flow_control_structures` lint.
 
 ## 0.1.5
 

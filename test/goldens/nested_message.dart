@@ -23,12 +23,8 @@ class InnerMessage {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! InnerMessage) return false;
-    final o = other as InnerMessage;
-    if (anotherField != o.anotherField) return false;
-    return true;
-  }
+  bool operator ==(Object other) =>
+      other is InnerMessage && anotherField == other.anotherField;
 }
 
 class InnerMessage$Builder {
@@ -69,13 +65,10 @@ class OuterMessage {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! OuterMessage) return false;
-    final o = other as OuterMessage;
-    if (innerField != o.innerField) return false;
-    if (stringField != o.stringField) return false;
-    return true;
-  }
+  bool operator ==(Object other) =>
+      other is OuterMessage &&
+      innerField == other.innerField &&
+      stringField == other.stringField;
 }
 
 class OuterMessage$Builder {

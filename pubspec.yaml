@@ -1,5 +1,5 @@
 name: message_builder
-version: 0.1.6-dev
+version: 0.1.6
 description: >-
   Generate immutable Dart classes serializable to json from a schema.
 homepage: https://github.com/natebosch/message_builder

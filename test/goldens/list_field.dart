@@ -29,13 +29,10 @@ class SomeListMessage {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! SomeListMessage) return false;
-    final o = other as SomeListMessage;
-    if (!_deepEquals(intList, o.intList)) return false;
-    if (!_deepEquals(stringList, o.stringList)) return false;
-    return true;
-  }
+  bool operator ==(Object other) =>
+      other is SomeListMessage &&
+      _deepEquals(intList, other.intList) &&
+      _deepEquals(stringList, other.stringList);
 }
 
 class SomeListMessage$Builder {

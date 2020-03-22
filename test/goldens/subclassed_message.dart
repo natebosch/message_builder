@@ -38,12 +38,8 @@ class FirstChildMessage implements ParentMessage {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! FirstChildMessage) return false;
-    final o = other as FirstChildMessage;
-    if (firstField != o.firstField) return false;
-    return true;
-  }
+  bool operator ==(Object other) =>
+      other is FirstChildMessage && firstField == other.firstField;
 }
 
 class FirstChildMessage$Builder {
@@ -80,12 +76,8 @@ class SecondChildMessage implements ParentMessage {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! SecondChildMessage) return false;
-    final o = other as SecondChildMessage;
-    if (secondField != o.secondField) return false;
-    return true;
-  }
+  bool operator ==(Object other) =>
+      other is SecondChildMessage && secondField == other.secondField;
 }
 
 class SecondChildMessage$Builder {

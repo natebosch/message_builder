@@ -23,12 +23,9 @@ class AnotherMessage {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! AnotherMessage) return false;
-    final o = other as AnotherMessage;
-    if (!_deepEquals(innerMessageMap, o.innerMessageMap)) return false;
-    return true;
-  }
+  bool operator ==(Object other) =>
+      other is AnotherMessage &&
+      _deepEquals(innerMessageMap, other.innerMessageMap);
 }
 
 class AnotherMessage$Builder {
@@ -92,15 +89,12 @@ class SomeMapMessage {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! SomeMapMessage) return false;
-    final o = other as SomeMapMessage;
-    if (!_deepEquals(intMap, o.intMap)) return false;
-    if (!_deepEquals(listMap, o.listMap)) return false;
-    if (!_deepEquals(mapMap, o.mapMap)) return false;
-    if (!_deepEquals(messageMap, o.messageMap)) return false;
-    return true;
-  }
+  bool operator ==(Object other) =>
+      other is SomeMapMessage &&
+      _deepEquals(intMap, other.intMap) &&
+      _deepEquals(listMap, other.listMap) &&
+      _deepEquals(mapMap, other.mapMap) &&
+      _deepEquals(messageMap, other.messageMap);
 }
 
 class SomeMapMessage$Builder {

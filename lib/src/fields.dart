@@ -19,7 +19,7 @@ class MessageField {
     ..type = type.type
     ..name = name);
 
-  String equalityCheck(String other) =>
+  Expression equalityCheck(String other) =>
       type.equalityCheck(name, '$other.$name');
 
   static List<MessageField> parse(Map fields) {
@@ -39,7 +39,7 @@ abstract class FieldType {
   Reference get type;
   bool get isPrimitive;
   bool get canCastInCollection;
-  String equalityCheck(String leftToken, String rightToken);
+  Expression equalityCheck(String leftToken, String rightToken);
 
   factory FieldType.parse(dynamic /*String|Map*/ field) {
     if (field is String) {
@@ -79,8 +79,8 @@ class PrimitiveFieldType implements FieldType {
   final canCastInCollection = true;
 
   @override
-  String equalityCheck(String leftToken, String rightToken) =>
-      '$leftToken != $rightToken';
+  Expression equalityCheck(String leftToken, String rightToken) =>
+      refer(leftToken).equalTo(refer(rightToken));
 }
 
 class MessageFieldType implements FieldType {
@@ -108,8 +108,8 @@ class MessageFieldType implements FieldType {
   final canCastInCollection = false;
 
   @override
-  String equalityCheck(String leftToken, String rightToken) =>
-      '$leftToken != $rightToken';
+  Expression equalityCheck(String leftToken, String rightToken) =>
+      refer(leftToken).equalTo(refer(rightToken));
 }
 
 class ListFieldType implements FieldType {
@@ -163,8 +163,8 @@ class ListFieldType implements FieldType {
   final canCastInCollection = false;
 
   @override
-  String equalityCheck(String leftToken, String rightToken) =>
-      '!_deepEquals($leftToken, $rightToken)';
+  Expression equalityCheck(String leftToken, String rightToken) =>
+      refer('_deepEquals').call([refer(leftToken), refer(rightToken)]);
 }
 
 class MapFieldType implements FieldType {
@@ -223,6 +223,6 @@ class MapFieldType implements FieldType {
   final canCastInCollection = false;
 
   @override
-  String equalityCheck(String leftToken, String rightToken) =>
-      '!_deepEquals($leftToken, $rightToken)';
+  Expression equalityCheck(String leftToken, String rightToken) =>
+      refer('_deepEquals').call([refer(leftToken), refer(rightToken)]);
 }

@@ -29,13 +29,10 @@ class SomeMessage {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! SomeMessage) return false;
-    final o = other as SomeMessage;
-    if (intField != o.intField) return false;
-    if (stringField != o.stringField) return false;
-    return true;
-  }
+  bool operator ==(Object other) =>
+      other is SomeMessage &&
+      intField == other.intField &&
+      stringField == other.stringField;
 }
 
 class SomeMessage$Builder {

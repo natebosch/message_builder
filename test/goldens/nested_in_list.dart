@@ -23,12 +23,8 @@ class InnerMessageInList {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! InnerMessageInList) return false;
-    final o = other as InnerMessageInList;
-    if (anotherField != o.anotherField) return false;
-    return true;
-  }
+  bool operator ==(Object other) =>
+      other is InnerMessageInList && anotherField == other.anotherField;
 }
 
 class InnerMessageInList$Builder {
@@ -65,12 +61,9 @@ class OuterMessageWithList {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! OuterMessageWithList) return false;
-    final o = other as OuterMessageWithList;
-    if (!_deepEquals(innerField, o.innerField)) return false;
-    return true;
-  }
+  bool operator ==(Object other) =>
+      other is OuterMessageWithList &&
+      _deepEquals(innerField, other.innerField);
 }
 
 class OuterMessageWithList$Builder {

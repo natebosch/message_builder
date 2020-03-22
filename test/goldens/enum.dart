@@ -23,12 +23,8 @@ class MessageUsingEnum {
   }
 
   @override
-  bool operator ==(Object other) {
-    if (other is! MessageUsingEnum) return false;
-    final o = other as MessageUsingEnum;
-    if (enumField != o.enumField) return false;
-    return true;
-  }
+  bool operator ==(Object other) =>
+      other is MessageUsingEnum && enumField == other.enumField;
 }
 
 class MessageUsingEnum$Builder {
