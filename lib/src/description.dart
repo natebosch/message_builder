@@ -131,8 +131,8 @@ class SubclassedMessage implements Description {
       final ctor = '${subclassSelections[key]}.fromJson(params)';
       selection.add(Code('if (selectBy == $key) return $ctor;'));
     }
-    selection.add(Code(
-        "throw new ArgumentError('Could not match $name for \$selectBy');"));
+    selection.add(
+        Code("throw ArgumentError('Could not match $name for \$selectBy');"));
     final fromJson = Constructor((b) => b
       ..factory = true
       ..name = 'fromJson'
@@ -148,8 +148,9 @@ class SubclassedMessage implements Description {
         ..abstract = true
         ..name = name
         ..constructors.add(fromJson)
-        ..methods.add(toJson))
-    ]..addAll(subclasses.expand((c) => c.implementation(enumWireTypes)));
+        ..methods.add(toJson)),
+      for (var subclass in subclasses) ...subclass.implementation(enumWireTypes)
+    ];
   }
 }
 
@@ -186,12 +187,17 @@ class Message implements Description {
     if (parentField != null) {
       toJsonMap[literalString(parentField)] = parentFieldToken;
     }
-    final toJson = Method((b) => b
-      ..returns = refer('Map')
-      ..name = 'toJson'
-      ..lambda = true
-      ..body = literalMap(toJsonMap).code);
     final implements = parent == null ? <Reference>[] : [refer(parent)];
+    final toJson = Method((b) {
+      b
+        ..returns = refer('Map')
+        ..name = 'toJson'
+        ..lambda = true
+        ..body = literalMap(toJsonMap).code;
+      if (implements.isNotEmpty) {
+        b.annotations.add(refer('override'));
+      }
+    });
     var clazz = Class((b) => b
       ..name = name
       ..implements.addAll(implements)

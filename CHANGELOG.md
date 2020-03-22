@@ -1,5 +1,7 @@
 ## 0.1.5-dev
 
+- Generate code that has no lints from `package:pedantic` at version `1.9.0`.
+
 ## 0.1.4
 
 - Generate code without implicit casts.

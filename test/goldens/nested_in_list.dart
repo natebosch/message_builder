@@ -110,7 +110,7 @@ bool _deepEquals(dynamic left, dynamic right) {
     var leftLength = left.length;
     var rightLength = right.length;
     if (leftLength != rightLength) return false;
-    for (int i = 0; i < leftLength; i++) {
+    for (var i = 0; i < leftLength; i++) {
       if (!_deepEquals(left[i], right[i])) return false;
     }
     return true;

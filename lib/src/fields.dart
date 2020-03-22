@@ -133,11 +133,12 @@ class ListFieldType implements FieldType {
   @override
   Expression fromParams(
       Expression fieldValue, Map<String, Reference> enumWireTypes) {
-    if (typeArgument.canCastInCollection)
+    if (typeArgument.canCastInCollection) {
       return fieldValue
           .asA(refer('List'))
           .property('cast')
           .call([], {}, [typeArgument.type]);
+    }
     final fromJsonClosure = Method((b) => b
       ..lambda = true
       ..requiredParameters.add(Parameter((b) => b..name = 'v'))
@@ -187,11 +188,12 @@ class MapFieldType implements FieldType {
   @override
   Expression fromParams(
       Expression fieldValue, Map<String, Reference> enumWireTypes) {
-    if (typeArgument.canCastInCollection)
+    if (typeArgument.canCastInCollection) {
       return fieldValue
           .asA(refer('Map'))
           .property('cast')
           .call([], {}, [refer('String'), typeArgument.type]);
+    }
     final toMapEntryClosure = Method((b) => b
       ..lambda = true
       ..requiredParameters.add(Parameter((b) => b..name = 'k'))

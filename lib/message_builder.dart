@@ -18,7 +18,7 @@ class MessageBuilder implements Builder {
   };
 
   @override
-  Future build(BuildStep buildStep) async {
+  Future<void> build(BuildStep buildStep) async {
     final descriptionsYaml =
         loadYaml(await buildStep.readAsString(buildStep.inputId)) as Map;
     final descriptions = <Description>[
@@ -41,7 +41,7 @@ class MessageBuilder implements Builder {
     ];
     final library = Library((b) => b.body.addAll(result));
     final emitter = DartEmitter(Allocator.simplePrefixing());
-    buildStep.writeAsString(buildStep.inputId.changeExtension('.dart'),
+    await buildStep.writeAsString(buildStep.inputId.changeExtension('.dart'),
         DartFormatter().format('${library.accept(emitter)}'));
   }
 }
@@ -52,7 +52,7 @@ bool _deepEquals(dynamic left, dynamic right) {
     var leftLength = left.length;
     var rightLength = right.length;
     if (leftLength != rightLength) return false;
-    for(int i = 0; i < leftLength; i++) {
+    for(var i = 0; i < leftLength; i++) {
       if(!_deepEquals(left[i], right[i])) return false;
     }
     return true;

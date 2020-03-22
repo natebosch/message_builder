@@ -4,7 +4,7 @@ abstract class ParentMessage {
     if (selectBy == 'firstValue') return FirstChildMessage.fromJson(params);
     if (selectBy == 'secondValue') return SecondChildMessage.fromJson(params);
     if (selectBy == 'thirdValue') return ThirdChildMessage.fromJson(params);
-    throw new ArgumentError('Could not match ParentMessage for $selectBy');
+    throw ArgumentError('Could not match ParentMessage for $selectBy');
   }
 
   Map toJson();
@@ -28,6 +28,7 @@ class FirstChildMessage implements ParentMessage {
 
   final selectField = 'firstValue';
 
+  @override
   Map toJson() => {'firstField': firstField, 'selectField': 'firstValue'};
   @override
   int get hashCode {
@@ -69,6 +70,7 @@ class SecondChildMessage implements ParentMessage {
 
   final selectField = 'secondValue';
 
+  @override
   Map toJson() => {'secondField': secondField, 'selectField': 'secondValue'};
   @override
   int get hashCode {
@@ -99,6 +101,7 @@ class ThirdChildMessage implements ParentMessage {
 
   final selectField = 'thirdValue';
 
+  @override
   Map toJson() => {'selectField': 'thirdValue'};
   @override
   int get hashCode {
