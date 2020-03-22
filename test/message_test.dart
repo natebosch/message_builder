@@ -167,8 +167,7 @@ void main() {
   group('subclassed message', () {
     test('deserialize', () {
       var serialized = {'selectField': 'firstValue', 'firstField': 1};
-      expect(ParentMessage.fromJson(serialized),
-          isInstanceOf<FirstChildMessage>());
+      expect(ParentMessage.fromJson(serialized), isA<FirstChildMessage>());
       expect(ParentMessage.fromJson(serialized),
           FirstChildMessage((b) => b..firstField = 1));
     });
