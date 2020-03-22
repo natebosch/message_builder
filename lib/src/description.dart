@@ -15,7 +15,7 @@ abstract class Description {
     if (params.containsKey('subclassBy')) {
       return _parseSubclassedMessage(name, params);
     }
-    var fields = params.containsKey('fields')
+    final fields = params.containsKey('fields')
         ? MessageField.parse(params['fields'] as Map)
         : MessageField.parse(params);
     return Message(name, fields);
@@ -23,17 +23,17 @@ abstract class Description {
 }
 
 Description _parseSubclassedMessage(String name, Map params) {
-  var parentField = params['subclassBy'] as Map;
-  var subclasses = <Message>[];
-  var subclassSelections = <Expression, String>{};
-  var descriptions = params['subclasses'] as Map;
+  final parentField = params['subclassBy'] as Map;
+  final subclasses = <Message>[];
+  final subclassSelections = <Expression, String>{};
+  final descriptions = params['subclasses'] as Map;
   for (var subclass in descriptions.keys.cast<String>().toList()..sort()) {
-    var description = descriptions[subclass] as Map;
-    var fields = {};
+    final description = descriptions[subclass] as Map;
+    final fields = {};
     if (description.containsKey('fields')) {
       fields.addAll(description['fields'] as Map);
     }
-    var parentFieldToken = literal(description['selectOn']);
+    final parentFieldToken = literal(description['selectOn']);
     subclasses.add(Message(subclass, MessageField.parse(fields), name,
         parentField.keys.single as String, parentFieldToken));
     subclassSelections[parentFieldToken] = subclass;
@@ -43,7 +43,7 @@ Description _parseSubclassedMessage(String name, Map params) {
 }
 
 Iterable<EnumValue> _parseEnumValues(Map values) {
-  var names = values.keys.cast<String>().toList()..sort();
+  final names = values.keys.cast<String>().toList()..sort();
   return names.map((name) => EnumValue(name, values[name]));
 }
 
@@ -198,15 +198,15 @@ class Message implements Description {
         b.annotations.add(refer('override'));
       }
     });
-    var clazz = Class((b) => b
+    final clazz = Class((b) => b
       ..name = name
       ..implements.addAll(implements)
       ..fields.addAll(fieldDeclarations)
       ..constructors.addAll(_ctors(enumWireTypes))
       ..methods.add(toJson)
-      ..methods.add(buildHashCode(fields))
+      ..methods.add(buildHashCode(name, fields))
       ..methods.add(buildEquals(name, fields)));
-    var builder = Class((b) => b
+    final builder = Class((b) => b
       ..name = _builderName
       ..fields.addAll(fields.map((f) => f.declaration))
       ..constructors.add(Constructor((b) => b..name = '_')));

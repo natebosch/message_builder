@@ -32,7 +32,7 @@ class FirstChildMessage implements ParentMessage {
   Map toJson() => {'firstField': firstField, 'selectField': 'firstValue'};
   @override
   int get hashCode {
-    var hash = 0;
+    var hash = 307866602;
     hash = _hashCombine(hash, _deepHashCode(firstField));
     return _hashComplete(hash);
   }
@@ -40,7 +40,7 @@ class FirstChildMessage implements ParentMessage {
   @override
   bool operator ==(Object other) {
     if (other is! FirstChildMessage) return false;
-    var o = other as FirstChildMessage;
+    final o = other as FirstChildMessage;
     if (firstField != o.firstField) return false;
     return true;
   }
@@ -74,7 +74,7 @@ class SecondChildMessage implements ParentMessage {
   Map toJson() => {'secondField': secondField, 'selectField': 'secondValue'};
   @override
   int get hashCode {
-    var hash = 0;
+    var hash = 34131136;
     hash = _hashCombine(hash, _deepHashCode(secondField));
     return _hashComplete(hash);
   }
@@ -82,7 +82,7 @@ class SecondChildMessage implements ParentMessage {
   @override
   bool operator ==(Object other) {
     if (other is! SecondChildMessage) return false;
-    var o = other as SecondChildMessage;
+    final o = other as SecondChildMessage;
     if (secondField != o.secondField) return false;
     return true;
   }
@@ -104,11 +104,7 @@ class ThirdChildMessage implements ParentMessage {
   @override
   Map toJson() => {'selectField': 'thirdValue'};
   @override
-  int get hashCode {
-    var hash = 0;
-    return _hashComplete(hash);
-  }
-
+  int get hashCode => 560423767;
   @override
   bool operator ==(Object other) => other is ThirdChildMessage;
 }

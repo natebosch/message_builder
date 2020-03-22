@@ -17,7 +17,7 @@ class AnotherMessage {
   Map toJson() => {'innerMessageMap': innerMessageMap};
   @override
   int get hashCode {
-    var hash = 0;
+    var hash = 170180962;
     hash = _hashCombine(hash, _deepHashCode(innerMessageMap));
     return _hashComplete(hash);
   }
@@ -25,7 +25,7 @@ class AnotherMessage {
   @override
   bool operator ==(Object other) {
     if (other is! AnotherMessage) return false;
-    var o = other as AnotherMessage;
+    final o = other as AnotherMessage;
     if (!_deepEquals(innerMessageMap, o.innerMessageMap)) return false;
     return true;
   }
@@ -83,7 +83,7 @@ class SomeMapMessage {
       };
   @override
   int get hashCode {
-    var hash = 0;
+    var hash = 1073311120;
     hash = _hashCombine(hash, _deepHashCode(intMap));
     hash = _hashCombine(hash, _deepHashCode(listMap));
     hash = _hashCombine(hash, _deepHashCode(mapMap));
@@ -94,7 +94,7 @@ class SomeMapMessage {
   @override
   bool operator ==(Object other) {
     if (other is! SomeMapMessage) return false;
-    var o = other as SomeMapMessage;
+    final o = other as SomeMapMessage;
     if (!_deepEquals(intMap, o.intMap)) return false;
     if (!_deepEquals(listMap, o.listMap)) return false;
     if (!_deepEquals(mapMap, o.mapMap)) return false;
@@ -143,8 +143,8 @@ int _deepHashCode(dynamic value) {
 
 bool _deepEquals(dynamic left, dynamic right) {
   if (left is List && right is List) {
-    var leftLength = left.length;
-    var rightLength = right.length;
+    final leftLength = left.length;
+    final rightLength = right.length;
     if (leftLength != rightLength) return false;
     for (var i = 0; i < leftLength; i++) {
       if (!_deepEquals(left[i], right[i])) return false;
@@ -152,8 +152,8 @@ bool _deepEquals(dynamic left, dynamic right) {
     return true;
   }
   if (left is Map && right is Map) {
-    var leftLength = left.length;
-    var rightLength = right.length;
+    final leftLength = left.length;
+    final rightLength = right.length;
     if (leftLength != rightLength) return false;
     for (final key in left.keys) {
       if (!_deepEquals(left[key], right[key])) return false;

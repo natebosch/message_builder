@@ -1,6 +1,7 @@
 ## 0.1.5-dev
 
 - Generate code that has no lints from `package:pedantic` at version `1.9.0`.
+- Generate code that follow `prefer_final_locals` lint
 
 ## 0.1.4
 

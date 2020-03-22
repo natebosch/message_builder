@@ -22,7 +22,7 @@ class SomeListMessage {
   Map toJson() => {'intList': intList, 'stringList': stringList};
   @override
   int get hashCode {
-    var hash = 0;
+    var hash = 530163;
     hash = _hashCombine(hash, _deepHashCode(intList));
     hash = _hashCombine(hash, _deepHashCode(stringList));
     return _hashComplete(hash);
@@ -31,7 +31,7 @@ class SomeListMessage {
   @override
   bool operator ==(Object other) {
     if (other is! SomeListMessage) return false;
-    var o = other as SomeListMessage;
+    final o = other as SomeListMessage;
     if (!_deepEquals(intList, o.intList)) return false;
     if (!_deepEquals(stringList, o.stringList)) return false;
     return true;
@@ -74,8 +74,8 @@ int _deepHashCode(dynamic value) {
 
 bool _deepEquals(dynamic left, dynamic right) {
   if (left is List && right is List) {
-    var leftLength = left.length;
-    var rightLength = right.length;
+    final leftLength = left.length;
+    final rightLength = right.length;
     if (leftLength != rightLength) return false;
     for (var i = 0; i < leftLength; i++) {
       if (!_deepEquals(left[i], right[i])) return false;
@@ -83,8 +83,8 @@ bool _deepEquals(dynamic left, dynamic right) {
     return true;
   }
   if (left is Map && right is Map) {
-    var leftLength = left.length;
-    var rightLength = right.length;
+    final leftLength = left.length;
+    final rightLength = right.length;
     if (leftLength != rightLength) return false;
     for (final key in left.keys) {
       if (!_deepEquals(left[key], right[key])) return false;

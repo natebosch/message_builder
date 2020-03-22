@@ -22,7 +22,7 @@ class SomeMessage {
   Map toJson() => {'intField': intField, 'stringField': stringField};
   @override
   int get hashCode {
-    var hash = 0;
+    var hash = 530289568;
     hash = _hashCombine(hash, _deepHashCode(intField));
     hash = _hashCombine(hash, _deepHashCode(stringField));
     return _hashComplete(hash);
@@ -31,7 +31,7 @@ class SomeMessage {
   @override
   bool operator ==(Object other) {
     if (other is! SomeMessage) return false;
-    var o = other as SomeMessage;
+    final o = other as SomeMessage;
     if (intField != o.intField) return false;
     if (stringField != o.stringField) return false;
     return true;

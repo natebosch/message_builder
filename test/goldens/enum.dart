@@ -17,7 +17,7 @@ class MessageUsingEnum {
   Map toJson() => {'enumField': enumField?.toJson()};
   @override
   int get hashCode {
-    var hash = 0;
+    var hash = 819494400;
     hash = _hashCombine(hash, _deepHashCode(enumField));
     return _hashComplete(hash);
   }
@@ -25,7 +25,7 @@ class MessageUsingEnum {
   @override
   bool operator ==(Object other) {
     if (other is! MessageUsingEnum) return false;
-    var o = other as MessageUsingEnum;
+    final o = other as MessageUsingEnum;
     if (enumField != o.enumField) return false;
     return true;
   }

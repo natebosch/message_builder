@@ -10,7 +10,7 @@ import 'goldens/subclassed_message.dart';
 void main() {
   group('message', () {
     test('deserialize', () {
-      var serialized = {'stringField': 'stringValue', 'intField': 1};
+      final serialized = {'stringField': 'stringValue', 'intField': 1};
       expect(
           SomeMessage.fromJson(serialized),
           SomeMessage((b) => b
@@ -19,20 +19,20 @@ void main() {
     });
 
     test('serialize', () {
-      var message = SomeMessage((b) => b
+      final message = SomeMessage((b) => b
         ..stringField = 'value'
         ..intField = 2);
       expect(message.toJson(), {'stringField': 'value', 'intField': 2});
     });
 
     test('hashCode', () {
-      var message = SomeMessage((b) => b
+      final message = SomeMessage((b) => b
         ..stringField = 'value'
         ..intField = 2);
-      var messageSame = SomeMessage((b) => b
+      final messageSame = SomeMessage((b) => b
         ..stringField = 'value'
         ..intField = 2);
-      var messageDifferent = SomeMessage((b) => b
+      final messageDifferent = SomeMessage((b) => b
         ..stringField = 'value'
         ..intField = 3);
       expect(message.hashCode, messageSame.hashCode);
@@ -42,7 +42,7 @@ void main() {
 
   group('with list field', () {
     test('deserialize', () {
-      var serialized = {
+      final serialized = {
         'stringList': ['first', 'second'],
         'intList': [1, 2]
       };
@@ -54,7 +54,7 @@ void main() {
     });
 
     test('serialize', () {
-      var message = SomeListMessage((b) => b
+      final message = SomeListMessage((b) => b
         ..stringList = ['a', 'b']
         ..intList = [3]);
       expect(message.toJson(), {
@@ -64,13 +64,13 @@ void main() {
     });
 
     test('hashCode', () {
-      var message = SomeListMessage((b) => b
+      final message = SomeListMessage((b) => b
         ..stringList = ['a', 'b']
         ..intList = [3, 4]);
-      var messageSame = SomeListMessage((b) => b
+      final messageSame = SomeListMessage((b) => b
         ..stringList = ['a', 'b']
         ..intList = [3, 4]);
-      var messageDifferent = SomeListMessage((b) => b
+      final messageDifferent = SomeListMessage((b) => b
         ..stringList = ['c', 'd']
         ..intList = [3, 4]);
       expect(message.hashCode, messageSame.hashCode);
@@ -80,7 +80,7 @@ void main() {
 
   group('nested message', () {
     test('serialize', () {
-      var serialized = {
+      final serialized = {
         'innerField': {'anotherField': 'foo'},
         'stringField': 'value'
       };
@@ -91,7 +91,7 @@ void main() {
             ..stringField = 'value'));
     });
     test('deserialize', () {
-      var message = OuterMessage((b) => b
+      final message = OuterMessage((b) => b
         ..innerField = InnerMessage((b) => b..anotherField = 'foo')
         ..stringField = 'value');
       expect(message.toJson(), {
@@ -100,13 +100,13 @@ void main() {
       });
     });
     test('hashcode', () {
-      var message = OuterMessage((b) => b
+      final message = OuterMessage((b) => b
         ..innerField = InnerMessage((b) => b..anotherField = 'foo')
         ..stringField = 'value');
-      var messageSame = OuterMessage((b) => b
+      final messageSame = OuterMessage((b) => b
         ..innerField = InnerMessage((b) => b..anotherField = 'foo')
         ..stringField = 'value');
-      var messageDifferent = OuterMessage((b) => b
+      final messageDifferent = OuterMessage((b) => b
         ..innerField = InnerMessage((b) => b..anotherField = 'different')
         ..stringField = 'value');
       expect(message.hashCode, messageSame.hashCode);
@@ -123,7 +123,7 @@ void main() {
 
   group('nested message in list', () {
     test('serialize', () {
-      var serialized = {
+      final serialized = {
         'innerField': [
           {'anotherField': 'foo'},
           {'anotherField': 'bar'}
@@ -138,7 +138,7 @@ void main() {
             ]));
     });
     test('deserialize', () {
-      var message = OuterMessageWithList((b) => b
+      final message = OuterMessageWithList((b) => b
         ..innerField = [
           InnerMessageInList((b) => b..anotherField = 'foo'),
           InnerMessageInList((b) => b..anotherField = 'bar')
@@ -151,11 +151,11 @@ void main() {
       });
     });
     test('hashcode', () {
-      var message = OuterMessageWithList((b) =>
+      final message = OuterMessageWithList((b) =>
           b..innerField = [InnerMessageInList((b) => b..anotherField = 'foo')]);
-      var messageSame = OuterMessageWithList((b) =>
+      final messageSame = OuterMessageWithList((b) =>
           b..innerField = [InnerMessageInList((b) => b..anotherField = 'foo')]);
-      var messageDifferent = OuterMessageWithList((b) => b
+      final messageDifferent = OuterMessageWithList((b) => b
         ..innerField = [
           InnerMessageInList((b) => b..anotherField = 'different')
         ]);
@@ -166,21 +166,21 @@ void main() {
 
   group('subclassed message', () {
     test('deserialize', () {
-      var serialized = {'selectField': 'firstValue', 'firstField': 1};
+      final serialized = {'selectField': 'firstValue', 'firstField': 1};
       expect(ParentMessage.fromJson(serialized), isA<FirstChildMessage>());
       expect(ParentMessage.fromJson(serialized),
           FirstChildMessage((b) => b..firstField = 1));
     });
 
     test('serialize', () {
-      var message = ThirdChildMessage();
+      final message = ThirdChildMessage();
       expect(message.toJson(), {'selectField': 'thirdValue'});
     });
   });
 
   group('map fields', () {
     test('deserialize', () {
-      var serialized = {
+      final serialized = {
         'intMap': {'a': 1},
         'messageMap': {
           'b': {
@@ -210,7 +210,7 @@ void main() {
     });
 
     test('serialize', () {
-      var message = SomeMapMessage((b) => b
+      final message = SomeMapMessage((b) => b
         ..intMap = {'a': 1}
         ..messageMap = {
           'b': AnotherMessage((b) => b..innerMessageMap = {'foo': 'bar'})
@@ -238,7 +238,7 @@ void main() {
     });
 
     test('hashCode', () {
-      var message = SomeMapMessage((b) => b
+      final message = SomeMapMessage((b) => b
         ..intMap = {'a': 1, 'z': 2}
         ..messageMap = {
           'b': AnotherMessage((b) => b..innerMessageMap = {'foo': 'bar'})
@@ -249,7 +249,7 @@ void main() {
         ..mapMap = {
           'd': {'e': 'f'}
         });
-      var messageSame = SomeMapMessage((b) => b
+      final messageSame = SomeMapMessage((b) => b
         ..intMap = {'z': 2, 'a': 1}
         ..messageMap = {
           'b': AnotherMessage((b) => b..innerMessageMap = {'foo': 'bar'})
@@ -260,7 +260,7 @@ void main() {
         ..mapMap = {
           'd': {'e': 'f'}
         });
-      var messageDifferent = SomeMapMessage((b) => b
+      final messageDifferent = SomeMapMessage((b) => b
         ..intMap = {'a': 1}
         ..messageMap = {
           'b': AnotherMessage((b) => b..innerMessageMap = {'foo': 'different'})

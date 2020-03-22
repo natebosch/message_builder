@@ -17,7 +17,7 @@ class InnerMessage {
   Map toJson() => {'anotherField': anotherField};
   @override
   int get hashCode {
-    var hash = 0;
+    var hash = 407157155;
     hash = _hashCombine(hash, _deepHashCode(anotherField));
     return _hashComplete(hash);
   }
@@ -25,7 +25,7 @@ class InnerMessage {
   @override
   bool operator ==(Object other) {
     if (other is! InnerMessage) return false;
-    var o = other as InnerMessage;
+    final o = other as InnerMessage;
     if (anotherField != o.anotherField) return false;
     return true;
   }
@@ -62,7 +62,7 @@ class OuterMessage {
       {'innerField': innerField?.toJson(), 'stringField': stringField};
   @override
   int get hashCode {
-    var hash = 0;
+    var hash = 556777058;
     hash = _hashCombine(hash, _deepHashCode(innerField));
     hash = _hashCombine(hash, _deepHashCode(stringField));
     return _hashComplete(hash);
@@ -71,7 +71,7 @@ class OuterMessage {
   @override
   bool operator ==(Object other) {
     if (other is! OuterMessage) return false;
-    var o = other as OuterMessage;
+    final o = other as OuterMessage;
     if (innerField != o.innerField) return false;
     if (stringField != o.stringField) return false;
     return true;

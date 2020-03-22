@@ -17,7 +17,7 @@ class InnerMessageInList {
   Map toJson() => {'anotherField': anotherField};
   @override
   int get hashCode {
-    var hash = 0;
+    var hash = 620164184;
     hash = _hashCombine(hash, _deepHashCode(anotherField));
     return _hashComplete(hash);
   }
@@ -25,7 +25,7 @@ class InnerMessageInList {
   @override
   bool operator ==(Object other) {
     if (other is! InnerMessageInList) return false;
-    var o = other as InnerMessageInList;
+    final o = other as InnerMessageInList;
     if (anotherField != o.anotherField) return false;
     return true;
   }
@@ -59,7 +59,7 @@ class OuterMessageWithList {
   Map toJson() => {'innerField': innerField?.map((v) => v?.toJson())?.toList()};
   @override
   int get hashCode {
-    var hash = 0;
+    var hash = 248509690;
     hash = _hashCombine(hash, _deepHashCode(innerField));
     return _hashComplete(hash);
   }
@@ -67,7 +67,7 @@ class OuterMessageWithList {
   @override
   bool operator ==(Object other) {
     if (other is! OuterMessageWithList) return false;
-    var o = other as OuterMessageWithList;
+    final o = other as OuterMessageWithList;
     if (!_deepEquals(innerField, o.innerField)) return false;
     return true;
   }
@@ -107,8 +107,8 @@ int _deepHashCode(dynamic value) {
 
 bool _deepEquals(dynamic left, dynamic right) {
   if (left is List && right is List) {
-    var leftLength = left.length;
-    var rightLength = right.length;
+    final leftLength = left.length;
+    final rightLength = right.length;
     if (leftLength != rightLength) return false;
     for (var i = 0; i < leftLength; i++) {
       if (!_deepEquals(left[i], right[i])) return false;
@@ -116,8 +116,8 @@ bool _deepEquals(dynamic left, dynamic right) {
     return true;
   }
   if (left is Map && right is Map) {
-    var leftLength = left.length;
-    var rightLength = right.length;
+    final leftLength = left.length;
+    final rightLength = right.length;
     if (leftLength != rightLength) return false;
     for (final key in left.keys) {
       if (!_deepEquals(left[key], right[key])) return false;

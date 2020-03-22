@@ -17,7 +17,7 @@ Method buildEquals(String clazz, Iterable<MessageField> fields) {
   }
   final statements = [
     'if(other is! $clazz) return false;',
-    'var o = other as $clazz;',
+    'final o = other as $clazz;',
   ].map((s) => Code(s)).toList();
   statements.addAll(
       fields.map((f) => Code('if(${f.equalityCheck('o')}) return false;')));

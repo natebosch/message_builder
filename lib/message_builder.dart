@@ -49,8 +49,8 @@ class MessageBuilder implements Builder {
 const _deepEquals = Code('''
 bool _deepEquals(dynamic left, dynamic right) {
   if (left is List && right is List) {
-    var leftLength = left.length;
-    var rightLength = right.length;
+    final leftLength = left.length;
+    final rightLength = right.length;
     if (leftLength != rightLength) return false;
     for(var i = 0; i < leftLength; i++) {
       if(!_deepEquals(left[i], right[i])) return false;
@@ -58,8 +58,8 @@ bool _deepEquals(dynamic left, dynamic right) {
     return true;
   }
   if (left is Map && right is Map) {
-    var leftLength = left.length;
-    var rightLength = right.length;
+    final leftLength = left.length;
+    final rightLength = right.length;
     if(leftLength != rightLength) return false;
     for(final key in left.keys) {
       if(!_deepEquals(left[key], right[key])) return false;
