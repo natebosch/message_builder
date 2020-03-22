@@ -5,9 +5,9 @@ class MessageField {
   final FieldType type;
   MessageField(this.name, this.type);
 
-  Expression get fromParams {
+  Expression fromParams(Map<String, Reference> enumWireTypes) {
     final paramValue = refer('params').index(literalString(name));
-    final toType = type.fromParams(paramValue);
+    final toType = type.fromParams(paramValue, enumWireTypes);
     return refer('params')
         .property('containsKey')
         .call([literalString(name)])
@@ -34,7 +34,8 @@ const _primitives = ['String', 'int', 'bool', 'dynamic'];
 
 abstract class FieldType {
   Expression toJson(Expression e);
-  Expression fromParams(Expression fieldValue);
+  Expression fromParams(
+      Expression fieldValue, Map<String, Reference> enumWireTypes);
   Reference get type;
   bool get isPrimitive;
   bool get canCastInCollection;
@@ -65,7 +66,8 @@ class PrimitiveFieldType implements FieldType {
   Expression toJson(Expression e) => e;
 
   @override
-  Expression fromParams(Expression fieldValue) => fieldValue;
+  Expression fromParams(Expression fieldValue, Map<String, Reference> _) =>
+      fieldValue.asA(type);
 
   @override
   Reference get type => refer(name);
@@ -89,8 +91,12 @@ class MessageFieldType implements FieldType {
   Expression toJson(Expression e) => e.nullSafeProperty('toJson').call([]);
 
   @override
-  Expression fromParams(Expression fieldValue) =>
-      refer(name).newInstanceNamed('fromJson', [fieldValue]);
+  Expression fromParams(
+      Expression fieldValue, Map<String, Reference> enumWireTypes) {
+    final castType =
+        enumWireTypes.containsKey(name) ? enumWireTypes[name] : refer('Map');
+    return refer(name).newInstanceNamed('fromJson', [fieldValue.asA(castType)]);
+  }
 
   @override
   Reference get type => refer(name);
@@ -125,7 +131,8 @@ class ListFieldType implements FieldType {
   }
 
   @override
-  Expression fromParams(Expression fieldValue) {
+  Expression fromParams(
+      Expression fieldValue, Map<String, Reference> enumWireTypes) {
     if (typeArgument.canCastInCollection)
       return fieldValue
           .asA(refer('List'))
@@ -134,7 +141,7 @@ class ListFieldType implements FieldType {
     final fromJsonClosure = Method((b) => b
       ..lambda = true
       ..requiredParameters.add(Parameter((b) => b..name = 'v'))
-      ..body = typeArgument.fromParams(refer('v')).code).closure;
+      ..body = typeArgument.fromParams(refer('v'), enumWireTypes).code).closure;
     return fieldValue
         .asA(refer('List'))
         .property('map')
@@ -178,7 +185,8 @@ class MapFieldType implements FieldType {
   }
 
   @override
-  Expression fromParams(Expression fieldValue) {
+  Expression fromParams(
+      Expression fieldValue, Map<String, Reference> enumWireTypes) {
     if (typeArgument.canCastInCollection)
       return fieldValue
           .asA(refer('Map'))
@@ -188,10 +196,13 @@ class MapFieldType implements FieldType {
       ..lambda = true
       ..requiredParameters.add(Parameter((b) => b..name = 'k'))
       ..requiredParameters.add(Parameter((b) => b..name = 'v'))
-      ..body = refer('MapEntry').newInstance(
-          [refer('k'), typeArgument.fromParams(refer('v'))],
-          {},
-          [refer('String'), typeArgument.type]).code).closure;
+      ..body = refer('MapEntry').newInstance([
+        refer('k').asA(refer('String')),
+        typeArgument.fromParams(refer('v'), enumWireTypes)
+      ], {}, [
+        refer('String'),
+        typeArgument.type
+      ]).code).closure;
     return fieldValue
         .asA(refer('Map'))
         .property('map')

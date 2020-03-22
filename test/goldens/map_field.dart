@@ -51,17 +51,19 @@ class SomeMapMessage {
           ? (params['intMap'] as Map).cast<String, int>()
           : null,
       params.containsKey('listMap') && params['listMap'] != null
-          ? (params['listMap'] as Map).map(
-              (k, v) => MapEntry<String, List<int>>(k, (v as List).cast<int>()))
+          ? (params['listMap'] as Map).map((k, v) =>
+              MapEntry<String, List<int>>(
+                  (k as String), (v as List).cast<int>()))
           : null,
       params.containsKey('mapMap') && params['mapMap'] != null
           ? (params['mapMap'] as Map).map((k, v) =>
               MapEntry<String, Map<String, String>>(
-                  k, (v as Map).cast<String, String>()))
+                  (k as String), (v as Map).cast<String, String>()))
           : null,
       params.containsKey('messageMap') && params['messageMap'] != null
           ? (params['messageMap'] as Map).map((k, v) =>
-              MapEntry<String, AnotherMessage>(k, AnotherMessage.fromJson(v)))
+              MapEntry<String, AnotherMessage>(
+                  (k as String), AnotherMessage.fromJson((v as Map))))
           : null);
 
   final Map<String, int> intMap;
@@ -139,7 +141,7 @@ int _deepHashCode(dynamic value) {
   return value.hashCode;
 }
 
-_deepEquals(dynamic left, dynamic right) {
+bool _deepEquals(dynamic left, dynamic right) {
   if (left is List && right is List) {
     var leftLength = left.length;
     var rightLength = right.length;

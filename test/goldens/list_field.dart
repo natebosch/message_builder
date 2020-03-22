@@ -72,7 +72,7 @@ int _deepHashCode(dynamic value) {
   return value.hashCode;
 }
 
-_deepEquals(dynamic left, dynamic right) {
+bool _deepEquals(dynamic left, dynamic right) {
   if (left is List && right is List) {
     var leftLength = left.length;
     var rightLength = right.length;

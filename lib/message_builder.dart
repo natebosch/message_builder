@@ -19,23 +19,26 @@ class MessageBuilder implements Builder {
 
   @override
   Future build(BuildStep buildStep) async {
-    final descriptions =
+    final descriptionsYaml =
         loadYaml(await buildStep.readAsString(buildStep.inputId));
-    final result = <Spec>[];
-    var hasCollection = false;
-    for (final name in descriptions.keys.toList()..sort()) {
-      if (descriptions[name] is! Map) {
-        log.severe('Skipping non-map entry: $name');
-        continue;
-      }
-      final description = Description.parse(name, descriptions[name]);
-      if (description.hasCollectionField) hasCollection = true;
-      result.addAll(description.implementation);
-    }
-    result.add(_hashMethods);
-    if (hasCollection) {
-      result.add(_deepEquals);
-    }
+    final descriptions = <Description>[
+      for (final name in descriptionsYaml.keys.toList()..sort())
+        if (descriptionsYaml[name] is! Map)
+          throw Exception('Non-map entry: $name')
+        else
+          Description.parse(name, descriptionsYaml[name])
+    ];
+    final hasCollection = descriptions.any((d) => d.hasCollectionField);
+    final enumWireTypes = {
+      for (final description in descriptions)
+        if (description is EnumType) description.name: description.wireType
+    };
+    final result = <Spec>[
+      for (final description in descriptions)
+        ...description.implementation(enumWireTypes),
+      _hashMethods,
+      if (hasCollection) _deepEquals,
+    ];
     final library = Library((b) => b.body.addAll(result));
     final emitter = DartEmitter(Allocator.simplePrefixing());
     buildStep.writeAsString(buildStep.inputId.changeExtension('.dart'),
@@ -44,7 +47,7 @@ class MessageBuilder implements Builder {
 }
 
 const _deepEquals = Code('''
-_deepEquals(dynamic left, dynamic right) {
+bool _deepEquals(dynamic left, dynamic right) {
   if (left is List && right is List) {
     var leftLength = left.length;
     var rightLength = right.length;

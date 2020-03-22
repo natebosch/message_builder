@@ -5,7 +5,7 @@ import 'fields.dart';
 import 'hash_code.dart';
 
 abstract class Description {
-  Iterable<Spec> get implementation;
+  Iterable<Spec> implementation(Map<String, Reference> enumWireTypes);
   bool get hasCollectionField;
   factory Description.parse(String name, Map params) {
     if (params.containsKey('enumValues')) {
@@ -57,7 +57,7 @@ class EnumType implements Description {
   bool get hasCollectionField => false;
 
   @override
-  Iterable<Spec> get implementation {
+  Iterable<Spec> implementation(Map<String, Reference> enumWireTypes) {
     final constValues = values.map((v) => Field((b) => b
       ..static = true
       ..modifier = FieldModifier.constant
@@ -119,7 +119,7 @@ class SubclassedMessage implements Description {
   bool get hasCollectionField => subclasses.any((m) => m.hasCollectionField);
 
   @override
-  Iterable<Spec> get implementation {
+  Iterable<Spec> implementation(Map<String, Reference> enumWireTypes) {
     final selection = <Code>[
       refer('params')
           .index(literalString(subclassBy))
@@ -127,7 +127,7 @@ class SubclassedMessage implements Description {
           .statement
     ];
     for (final key in subclassSelections.keys) {
-      final ctor = 'new ${subclassSelections[key]}.fromJson(params)';
+      final ctor = '${subclassSelections[key]}.fromJson(params)';
       selection.add(Code('if (selectBy == $key) return $ctor;'));
     }
     selection.add(Code(
@@ -148,7 +148,7 @@ class SubclassedMessage implements Description {
         ..name = name
         ..constructors.add(fromJson)
         ..methods.add(toJson))
-    ]..addAll(subclasses.expand((c) => c.implementation));
+    ]..addAll(subclasses.expand((c) => c.implementation(enumWireTypes)));
   }
 }
 
@@ -168,7 +168,7 @@ class Message implements Description {
       fields.any((f) => f.type is ListFieldType || f.type is MapFieldType);
 
   @override
-  Iterable<Spec> get implementation {
+  Iterable<Spec> implementation(Map<String, Reference> enumWireTypes) {
     final fieldDeclarations = fields
         .map((f) => f.declaration)
         .map((d) => d.rebuild((b) => b.modifier = FieldModifier.final$))
@@ -195,7 +195,7 @@ class Message implements Description {
       ..name = name
       ..implements.addAll(implements)
       ..fields.addAll(fieldDeclarations)
-      ..constructors.addAll(_ctors)
+      ..constructors.addAll(_ctors(enumWireTypes))
       ..methods.add(toJson)
       ..methods.add(buildHashCode(fields))
       ..methods.add(buildEquals(name, fields)));
@@ -209,47 +209,49 @@ class Message implements Description {
     ];
   }
 
-  Iterable<Constructor> get _ctors => fields.isNotEmpty
-      ? [
-          Constructor((b) => b
-            ..name = '_'
-            ..requiredParameters.addAll(fields
-                .map((f) => Parameter((b) => b..name = 'this.${f.name}')))),
-          Constructor((b) => b
-            ..factory = true
-            ..requiredParameters.add(Parameter((b) => b
-              ..type = FunctionType((b) => b
-                ..returnType = refer('void')
-                ..requiredParameters.add(refer(_builderName)))
-              ..name = 'init'))
-            ..body = Block.of([
-              refer(_builderName)
-                  .newInstanceNamed('_', [])
-                  .assignFinal('b')
-                  .statement,
-              refer('init').call([refer('b')]).statement,
-              refer(name)
-                  .newInstanceNamed(
-                      '_', fields.map((f) => refer('b').property(f.name)))
-                  .returned
-                  .statement,
-            ])),
-          Constructor((b) => b
-            ..factory = true
-            ..name = 'fromJson'
-            ..lambda = true
-            ..requiredParameters.add(Parameter((b) => b
-              ..type = refer('Map')
-              ..name = 'params'))
-            ..body = refer(name)
-                .newInstanceNamed('_', fields.map((f) => f.fromParams))
-                .code),
-        ]
-      : [
-          Constructor((b) => b..constant = true),
-          Constructor((b) => b
-            ..constant = true
-            ..name = 'fromJson'
-            ..optionalParameters.add(Parameter((b) => b..name = '_')))
-        ];
+  Iterable<Constructor> _ctors(Map<String, Reference> enumWireTypes) =>
+      fields.isNotEmpty
+          ? [
+              Constructor((b) => b
+                ..name = '_'
+                ..requiredParameters.addAll(fields
+                    .map((f) => Parameter((b) => b..name = 'this.${f.name}')))),
+              Constructor((b) => b
+                ..factory = true
+                ..requiredParameters.add(Parameter((b) => b
+                  ..type = FunctionType((b) => b
+                    ..returnType = refer('void')
+                    ..requiredParameters.add(refer(_builderName)))
+                  ..name = 'init'))
+                ..body = Block.of([
+                  refer(_builderName)
+                      .newInstanceNamed('_', [])
+                      .assignFinal('b')
+                      .statement,
+                  refer('init').call([refer('b')]).statement,
+                  refer(name)
+                      .newInstanceNamed(
+                          '_', fields.map((f) => refer('b').property(f.name)))
+                      .returned
+                      .statement,
+                ])),
+              Constructor((b) => b
+                ..factory = true
+                ..name = 'fromJson'
+                ..lambda = true
+                ..requiredParameters.add(Parameter((b) => b
+                  ..type = refer('Map')
+                  ..name = 'params'))
+                ..body = refer(name)
+                    .newInstanceNamed(
+                        '_', fields.map((f) => f.fromParams(enumWireTypes)))
+                    .code),
+            ]
+          : [
+              Constructor((b) => b..constant = true),
+              Constructor((b) => b
+                ..constant = true
+                ..name = 'fromJson'
+                ..optionalParameters.add(Parameter((b) => b..name = '_')))
+            ];
 }

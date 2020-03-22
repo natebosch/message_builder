@@ -4,7 +4,7 @@ abstract class ParentMessage {
     if (selectBy == 'firstValue') return FirstChildMessage.fromJson(params);
     if (selectBy == 'secondValue') return SecondChildMessage.fromJson(params);
     if (selectBy == 'thirdValue') return ThirdChildMessage.fromJson(params);
-    throw ArgumentError('Could not match ParentMessage for $selectBy');
+    throw new ArgumentError('Could not match ParentMessage for $selectBy');
   }
 
   Map toJson();
@@ -21,7 +21,7 @@ class FirstChildMessage implements ParentMessage {
 
   factory FirstChildMessage.fromJson(Map params) => FirstChildMessage._(
       params.containsKey('firstField') && params['firstField'] != null
-          ? params['firstField']
+          ? (params['firstField'] as int)
           : null);
 
   final int firstField;
@@ -62,7 +62,7 @@ class SecondChildMessage implements ParentMessage {
 
   factory SecondChildMessage.fromJson(Map params) => SecondChildMessage._(
       params.containsKey('secondField') && params['secondField'] != null
-          ? params['secondField']
+          ? (params['secondField'] as String)
           : null);
 
   final String secondField;

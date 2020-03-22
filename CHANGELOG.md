@@ -1,4 +1,6 @@
-## 0.1.4-dev
+## 0.1.4
+
+- Generate code without implicit casts.
 
 ## 0.1.3+6
 

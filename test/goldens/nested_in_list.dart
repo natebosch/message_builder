@@ -9,7 +9,7 @@ class InnerMessageInList {
 
   factory InnerMessageInList.fromJson(Map params) => InnerMessageInList._(
       params.containsKey('anotherField') && params['anotherField'] != null
-          ? params['anotherField']
+          ? (params['anotherField'] as String)
           : null);
 
   final String anotherField;
@@ -50,7 +50,7 @@ class OuterMessageWithList {
   factory OuterMessageWithList.fromJson(Map params) => OuterMessageWithList._(
       params.containsKey('innerField') && params['innerField'] != null
           ? (params['innerField'] as List)
-              .map((v) => InnerMessageInList.fromJson(v))
+              .map((v) => InnerMessageInList.fromJson((v as Map)))
               .toList()
           : null);
 
@@ -105,7 +105,7 @@ int _deepHashCode(dynamic value) {
   return value.hashCode;
 }
 
-_deepEquals(dynamic left, dynamic right) {
+bool _deepEquals(dynamic left, dynamic right) {
   if (left is List && right is List) {
     var leftLength = left.length;
     var rightLength = right.length;
