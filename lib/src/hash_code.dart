@@ -18,10 +18,5 @@ Method buildHashCode(String name, Iterable<MessageField> fields) {
   statements.addAll(fields.map((field) =>
       Code('hash = _hashCombine(hash, _deepHashCode(${field.name}));')));
   statements.add(Code('return _hashComplete(hash);'));
-  return Method((b) => b
-    ..annotations.add(refer('override'))
-    ..returns = refer('int')
-    ..type = MethodType.getter
-    ..name = 'hashCode'
-    ..body = Block.of(statements));
+  return skeleton.rebuild((b) => b..body = Block.of(statements));
 }
