@@ -20,13 +20,13 @@ class MessageBuilder implements Builder {
   @override
   Future build(BuildStep buildStep) async {
     final descriptionsYaml =
-        loadYaml(await buildStep.readAsString(buildStep.inputId));
+        loadYaml(await buildStep.readAsString(buildStep.inputId)) as Map;
     final descriptions = <Description>[
-      for (final name in descriptionsYaml.keys.toList()..sort())
+      for (final name in descriptionsYaml.keys.cast<String>().toList()..sort())
         if (descriptionsYaml[name] is! Map)
           throw Exception('Non-map entry: $name')
         else
-          Description.parse(name, descriptionsYaml[name])
+          Description.parse(name, descriptionsYaml[name] as Map)
     ];
     final hasCollection = descriptions.any((d) => d.hasCollectionField);
     final enumWireTypes = {

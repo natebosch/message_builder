@@ -23,7 +23,7 @@ class MessageField {
       type.equalityCheck(name, '$other.$name');
 
   static List<MessageField> parse(Map fields) {
-    var names = fields.keys.toList()..sort();
+    var names = fields.keys.cast<String>().toList()..sort();
     return names
         .map((name) => MessageField(name, FieldType.parse(fields[name])))
         .toList();

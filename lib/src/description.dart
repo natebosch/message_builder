@@ -9,41 +9,41 @@ abstract class Description {
   bool get hasCollectionField;
   factory Description.parse(String name, Map params) {
     if (params.containsKey('enumValues')) {
-      return EnumType(
-          name, params['wireType'], _parseEnumValues(params['enumValues']));
+      return EnumType(name, params['wireType'] as String,
+          _parseEnumValues(params['enumValues'] as Map));
     }
     if (params.containsKey('subclassBy')) {
       return _parseSubclassedMessage(name, params);
     }
     var fields = params.containsKey('fields')
-        ? MessageField.parse(params['fields'])
+        ? MessageField.parse(params['fields'] as Map)
         : MessageField.parse(params);
     return Message(name, fields);
   }
 }
 
 Description _parseSubclassedMessage(String name, Map params) {
-  var parentField = params['subclassBy'];
+  var parentField = params['subclassBy'] as Map;
   var subclasses = <Message>[];
   var subclassSelections = <Expression, String>{};
-  var descriptions = params['subclasses'];
-  for (var subclass in descriptions.keys.toList()..sort()) {
-    var description = descriptions[subclass];
+  var descriptions = params['subclasses'] as Map;
+  for (var subclass in descriptions.keys.cast<String>().toList()..sort()) {
+    var description = descriptions[subclass] as Map;
     var fields = {};
     if (description.containsKey('fields')) {
-      fields.addAll(description['fields']);
+      fields.addAll(description['fields'] as Map);
     }
     var parentFieldToken = literal(description['selectOn']);
     subclasses.add(Message(subclass, MessageField.parse(fields), name,
-        parentField.keys.single, parentFieldToken));
+        parentField.keys.single as String, parentFieldToken));
     subclassSelections[parentFieldToken] = subclass;
   }
   return SubclassedMessage(
-      name, subclasses, parentField.keys.single, subclassSelections);
+      name, subclasses, parentField.keys.single as String, subclassSelections);
 }
 
 Iterable<EnumValue> _parseEnumValues(Map values) {
-  var names = values.keys.toList()..sort();
+  var names = values.keys.cast<String>().toList()..sort();
   return names.map((name) => EnumValue(name, values[name]));
 }
 
@@ -67,8 +67,9 @@ class EnumType implements Description {
       ..modifier = FieldModifier.final$
       ..type = wireType
       ..name = '_value');
-    final valueMap = Map<Expression, Expression>.fromIterable(values,
-        key: (v) => v.wireId, value: (v) => refer(name).property(v.name));
+    final valueMap = {
+      for (var v in values) v.wireId: refer(name).property(v.name)
+    };
     final fromJson = Constructor((b) => b
       ..factory = true
       ..name = 'fromJson'
@@ -179,9 +180,9 @@ class Message implements Description {
         ..name = parentField
         ..assignment = parentFieldToken.code));
     }
-    final toJsonMap = Map<Expression, Expression>.fromIterable(fields,
-        key: (field) => literalString(field.name),
-        value: (field) => field.type.toJson(refer(field.name)));
+    final toJsonMap = {
+      for (var f in fields) literalString(f.name): f.type.toJson(refer(f.name))
+    };
     if (parentField != null) {
       toJsonMap[literalString(parentField)] = parentFieldToken;
     }
