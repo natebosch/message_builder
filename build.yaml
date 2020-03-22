@@ -4,8 +4,13 @@ targets:
   tests:
     sources: ["test/**"]
     builders:
-      "|message_builder":
+      ":message_builder":
         generate_for: ["test/goldens/**"]
+  example:
+    sources: ["example/**"]
+    builders:
+      ":message_builder":
+        generate_for: ["example/messages.yaml"]
 
 builders:
   message_builder:
