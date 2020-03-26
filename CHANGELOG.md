@@ -1,3 +1,5 @@
+## 0.1.7-dev
+
 ## 0.1.6
 
 - Use a chain of `&&` in `operator ==` methods. This fixes a problem where some
