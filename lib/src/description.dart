@@ -77,8 +77,17 @@ class EnumType implements Description {
         ..name = 'value'
         ..type = wireType))
       ..body = Block.of([
-        literalConstMap(valueMap).assignConst('values').statement,
-        refer('values').index(refer('value')).returned.statement
+        declareConst('values').assign(literalConstMap(valueMap)).statement,
+        refer('values')
+            .index(refer('value'))
+            .ifNullThen(refer('FormatException')
+                .newInstance([
+                  literalString('\$value is not a valid wire value for $name')
+                ])
+                .thrown
+                .parenthesized)
+            .returned
+            .statement
       ]));
     final unnamed = Constructor((b) => b
       ..constant = true
@@ -122,9 +131,8 @@ class SubclassedMessage implements Description {
   @override
   Iterable<Spec> implementation(Map<String, Reference> enumWireTypes) {
     final selection = <Code>[
-      refer('params')
-          .index(literalString(subclassBy))
-          .assignFinal('selectBy')
+      declareFinal('selectBy')
+          .assign(refer('params').index(literalString(subclassBy)))
           .statement
     ];
     for (final key in subclassSelections.keys) {
@@ -157,9 +165,9 @@ class SubclassedMessage implements Description {
 class Message implements Description {
   final String name;
   final List<MessageField> fields;
-  final String parent;
-  final String parentField;
-  final Expression parentFieldToken;
+  final String? parent;
+  final String? parentField;
+  final Expression? parentFieldToken;
   Message(this.name, this.fields,
       [this.parent, this.parentField, this.parentFieldToken]);
 
@@ -175,17 +183,19 @@ class Message implements Description {
         .map((f) => f.declaration)
         .map((d) => d.rebuild((b) => b.modifier = FieldModifier.final$))
         .toList();
+    final parentField = this.parentField;
+    final parent = this.parent;
     if (parentField != null) {
       fieldDeclarations.add(Field((b) => b
         ..modifier = FieldModifier.final$
         ..name = parentField
-        ..assignment = parentFieldToken.code));
+        ..assignment = parentFieldToken!.code));
     }
     final toJsonMap = {
       for (var f in fields) literalString(f.name): f.type.toJson(refer(f.name))
     };
     if (parentField != null) {
-      toJsonMap[literalString(parentField)] = parentFieldToken;
+      toJsonMap[literalString(parentField)] = parentFieldToken!;
     }
     final implements = parent == null ? <Reference>[] : [refer(parent)];
     final toJson = Method((b) {
@@ -231,9 +241,8 @@ class Message implements Description {
                     ..requiredParameters.add(refer(_builderName)))
                   ..name = 'init'))
                 ..body = Block.of([
-                  refer(_builderName)
-                      .newInstanceNamed('_', [])
-                      .assignFinal('b')
+                  declareFinal('b')
+                      .assign(refer(_builderName).newInstanceNamed('_', []))
                       .statement,
                   refer('init').call([refer('b')]).statement,
                   refer(name)

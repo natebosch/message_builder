@@ -1,3 +1,4 @@
+// @dart=2.12
 class InnerMessageInList {
   InnerMessageInList._(this.anotherField);
 
@@ -9,10 +10,10 @@ class InnerMessageInList {
 
   factory InnerMessageInList.fromJson(Map params) => InnerMessageInList._(
       params.containsKey('anotherField') && params['anotherField'] != null
-          ? (params['anotherField'] as String)
+          ? (params['anotherField'] as String?)
           : null);
 
-  final String anotherField;
+  final String? anotherField;
 
   Map toJson() => {'anotherField': anotherField};
   @override
@@ -30,7 +31,7 @@ class InnerMessageInList {
 class InnerMessageInList$Builder {
   InnerMessageInList$Builder._();
 
-  String anotherField;
+  String? anotherField;
 }
 
 class OuterMessageWithList {
@@ -50,9 +51,9 @@ class OuterMessageWithList {
               .toList()
           : null);
 
-  final List<InnerMessageInList> innerField;
+  final List<InnerMessageInList?>? innerField;
 
-  Map toJson() => {'innerField': innerField?.map((v) => v?.toJson())?.toList()};
+  Map toJson() => {'innerField': innerField?.map((v) => v?.toJson()).toList()};
   @override
   int get hashCode {
     var hash = 248509690;
@@ -63,13 +64,16 @@ class OuterMessageWithList {
   @override
   bool operator ==(Object other) =>
       other is OuterMessageWithList &&
-      _deepEquals(innerField, other.innerField);
+      _deepEquals(
+        innerField,
+        other.innerField,
+      );
 }
 
 class OuterMessageWithList$Builder {
   OuterMessageWithList$Builder._();
 
-  List<InnerMessageInList> innerField;
+  List<InnerMessageInList?>? innerField;
 }
 
 int _hashCombine(int hash, int value) {
@@ -92,7 +96,7 @@ int _deepHashCode(dynamic value) {
     return (value.keys
             .map((key) => _hashCombine(key.hashCode, _deepHashCode(value[key])))
             .toList(growable: false)
-              ..sort())
+          ..sort())
         .reduce(_hashCombine);
   }
   return value.hashCode;

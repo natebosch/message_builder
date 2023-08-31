@@ -1,4 +1,6 @@
-## 0.1.7-dev
+## 0.2.0
+
+- Emit null safe dart with a `2.12` language version marker.
 
 ## 0.1.6
 

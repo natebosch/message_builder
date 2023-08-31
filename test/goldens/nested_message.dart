@@ -1,3 +1,4 @@
+// @dart=2.12
 class InnerMessage {
   InnerMessage._(this.anotherField);
 
@@ -9,10 +10,10 @@ class InnerMessage {
 
   factory InnerMessage.fromJson(Map params) => InnerMessage._(
       params.containsKey('anotherField') && params['anotherField'] != null
-          ? (params['anotherField'] as String)
+          ? (params['anotherField'] as String?)
           : null);
 
-  final String anotherField;
+  final String? anotherField;
 
   Map toJson() => {'anotherField': anotherField};
   @override
@@ -30,32 +31,41 @@ class InnerMessage {
 class InnerMessage$Builder {
   InnerMessage$Builder._();
 
-  String anotherField;
+  String? anotherField;
 }
 
 class OuterMessage {
-  OuterMessage._(this.innerField, this.stringField);
+  OuterMessage._(
+    this.innerField,
+    this.stringField,
+  );
 
   factory OuterMessage(void Function(OuterMessage$Builder) init) {
     final b = OuterMessage$Builder._();
     init(b);
-    return OuterMessage._(b.innerField, b.stringField);
+    return OuterMessage._(
+      b.innerField,
+      b.stringField,
+    );
   }
 
   factory OuterMessage.fromJson(Map params) => OuterMessage._(
-      params.containsKey('innerField') && params['innerField'] != null
-          ? InnerMessage.fromJson((params['innerField'] as Map))
-          : null,
-      params.containsKey('stringField') && params['stringField'] != null
-          ? (params['stringField'] as String)
-          : null);
+        params.containsKey('innerField') && params['innerField'] != null
+            ? InnerMessage.fromJson((params['innerField'] as Map))
+            : null,
+        params.containsKey('stringField') && params['stringField'] != null
+            ? (params['stringField'] as String?)
+            : null,
+      );
 
-  final InnerMessage innerField;
+  final InnerMessage? innerField;
 
-  final String stringField;
+  final String? stringField;
 
-  Map toJson() =>
-      {'innerField': innerField?.toJson(), 'stringField': stringField};
+  Map toJson() => {
+        'innerField': innerField?.toJson(),
+        'stringField': stringField,
+      };
   @override
   int get hashCode {
     var hash = 556777058;
@@ -74,9 +84,9 @@ class OuterMessage {
 class OuterMessage$Builder {
   OuterMessage$Builder._();
 
-  InnerMessage innerField;
+  InnerMessage? innerField;
 
-  String stringField;
+  String? stringField;
 }
 
 int _hashCombine(int hash, int value) {
@@ -99,7 +109,7 @@ int _deepHashCode(dynamic value) {
     return (value.keys
             .map((key) => _hashCombine(key.hashCode, _deepHashCode(value[key])))
             .toList(growable: false)
-              ..sort())
+          ..sort())
         .reduce(_hashCombine);
   }
   return value.hashCode;

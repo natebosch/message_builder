@@ -43,8 +43,9 @@ abstract class FieldType {
 
   factory FieldType.parse(dynamic /*String|Map*/ field) {
     if (field is String) {
-      if (_primitives.contains(field)) return PrimitiveFieldType(field);
-      return MessageFieldType(field);
+      return _primitives.contains(field)
+          ? PrimitiveFieldType(field)
+          : MessageFieldType(field);
     }
     if (field is Map) {
       if (field.containsKey('listType')) {
@@ -70,7 +71,9 @@ class PrimitiveFieldType implements FieldType {
       fieldValue.asA(type);
 
   @override
-  Reference get type => refer(name);
+  Reference get type => TypeReference((b) => b
+    ..symbol = name
+    ..isNullable = name != 'dynamic');
 
   @override
   final isPrimitive = true;
@@ -93,13 +96,14 @@ class MessageFieldType implements FieldType {
   @override
   Expression fromParams(
       Expression fieldValue, Map<String, Reference> enumWireTypes) {
-    final castType =
-        enumWireTypes.containsKey(name) ? enumWireTypes[name] : refer('Map');
+    final castType = enumWireTypes[name] ?? refer('Map');
     return refer(name).newInstanceNamed('fromJson', [fieldValue.asA(castType)]);
   }
 
   @override
-  Reference get type => refer(name);
+  Reference get type => TypeReference((b) => b
+    ..symbol = name
+    ..isNullable = true);
 
   @override
   final isPrimitive = false;
@@ -126,7 +130,7 @@ class ListFieldType implements FieldType {
     return e
         .nullSafeProperty('map')
         .call([toJsonClosure])
-        .nullSafeProperty('toList')
+        .property('toList')
         .call([]);
   }
 
@@ -154,7 +158,8 @@ class ListFieldType implements FieldType {
   @override
   Reference get type => TypeReference((b) => b
     ..symbol = 'List'
-    ..types.add(typeArgument.type));
+    ..types.add(typeArgument.type)
+    ..isNullable = true);
 
   @override
   bool get isPrimitive => typeArgument.isPrimitive;
@@ -214,7 +219,8 @@ class MapFieldType implements FieldType {
   @override
   Reference get type => TypeReference((b) => b
     ..symbol = 'Map'
-    ..types.addAll([refer('String'), typeArgument.type]));
+    ..types.addAll([refer('String'), typeArgument.type])
+    ..isNullable = true);
 
   @override
   bool get isPrimitive => typeArgument.isPrimitive;

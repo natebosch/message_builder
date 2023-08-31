@@ -1,25 +1,36 @@
+// @dart=2.12
 class SomeListMessage {
-  SomeListMessage._(this.intList, this.stringList);
+  SomeListMessage._(
+    this.intList,
+    this.stringList,
+  );
 
   factory SomeListMessage(void Function(SomeListMessage$Builder) init) {
     final b = SomeListMessage$Builder._();
     init(b);
-    return SomeListMessage._(b.intList, b.stringList);
+    return SomeListMessage._(
+      b.intList,
+      b.stringList,
+    );
   }
 
   factory SomeListMessage.fromJson(Map params) => SomeListMessage._(
-      params.containsKey('intList') && params['intList'] != null
-          ? (params['intList'] as List).cast<int>()
-          : null,
-      params.containsKey('stringList') && params['stringList'] != null
-          ? (params['stringList'] as List).cast<String>()
-          : null);
+        params.containsKey('intList') && params['intList'] != null
+            ? (params['intList'] as List).cast<int?>()
+            : null,
+        params.containsKey('stringList') && params['stringList'] != null
+            ? (params['stringList'] as List).cast<String?>()
+            : null,
+      );
 
-  final List<int> intList;
+  final List<int?>? intList;
 
-  final List<String> stringList;
+  final List<String?>? stringList;
 
-  Map toJson() => {'intList': intList, 'stringList': stringList};
+  Map toJson() => {
+        'intList': intList,
+        'stringList': stringList,
+      };
   @override
   int get hashCode {
     var hash = 530163;
@@ -31,16 +42,22 @@ class SomeListMessage {
   @override
   bool operator ==(Object other) =>
       other is SomeListMessage &&
-      _deepEquals(intList, other.intList) &&
-      _deepEquals(stringList, other.stringList);
+      _deepEquals(
+        intList,
+        other.intList,
+      ) &&
+      _deepEquals(
+        stringList,
+        other.stringList,
+      );
 }
 
 class SomeListMessage$Builder {
   SomeListMessage$Builder._();
 
-  List<int> intList;
+  List<int?>? intList;
 
-  List<String> stringList;
+  List<String?>? stringList;
 }
 
 int _hashCombine(int hash, int value) {
@@ -63,7 +80,7 @@ int _deepHashCode(dynamic value) {
     return (value.keys
             .map((key) => _hashCombine(key.hashCode, _deepHashCode(value[key])))
             .toList(growable: false)
-              ..sort())
+          ..sort())
         .reduce(_hashCombine);
   }
   return value.hashCode;

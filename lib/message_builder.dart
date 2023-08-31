@@ -40,9 +40,12 @@ class MessageBuilder implements Builder {
       if (hasCollection) _deepEquals,
     ];
     final library = Library((b) => b.body.addAll(result));
-    final emitter = DartEmitter(Allocator.simplePrefixing());
-    await buildStep.writeAsString(buildStep.inputId.changeExtension('.dart'),
-        DartFormatter().format('${library.accept(emitter)}'));
+    final emitter = DartEmitter(
+        allocator: Allocator.simplePrefixing(), useNullSafetySyntax: true);
+    await buildStep.writeAsString(
+        buildStep.inputId.changeExtension('.dart'),
+        '// @dart=2.12\n' +
+            DartFormatter().format('${library.accept(emitter)}'));
   }
 }
 

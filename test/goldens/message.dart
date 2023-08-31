@@ -1,25 +1,36 @@
+// @dart=2.12
 class SomeMessage {
-  SomeMessage._(this.intField, this.stringField);
+  SomeMessage._(
+    this.intField,
+    this.stringField,
+  );
 
   factory SomeMessage(void Function(SomeMessage$Builder) init) {
     final b = SomeMessage$Builder._();
     init(b);
-    return SomeMessage._(b.intField, b.stringField);
+    return SomeMessage._(
+      b.intField,
+      b.stringField,
+    );
   }
 
   factory SomeMessage.fromJson(Map params) => SomeMessage._(
-      params.containsKey('intField') && params['intField'] != null
-          ? (params['intField'] as int)
-          : null,
-      params.containsKey('stringField') && params['stringField'] != null
-          ? (params['stringField'] as String)
-          : null);
+        params.containsKey('intField') && params['intField'] != null
+            ? (params['intField'] as int?)
+            : null,
+        params.containsKey('stringField') && params['stringField'] != null
+            ? (params['stringField'] as String?)
+            : null,
+      );
 
-  final int intField;
+  final int? intField;
 
-  final String stringField;
+  final String? stringField;
 
-  Map toJson() => {'intField': intField, 'stringField': stringField};
+  Map toJson() => {
+        'intField': intField,
+        'stringField': stringField,
+      };
   @override
   int get hashCode {
     var hash = 530289568;
@@ -38,9 +49,9 @@ class SomeMessage {
 class SomeMessage$Builder {
   SomeMessage$Builder._();
 
-  int intField;
+  int? intField;
 
-  String stringField;
+  String? stringField;
 }
 
 int _hashCombine(int hash, int value) {
@@ -63,7 +74,7 @@ int _deepHashCode(dynamic value) {
     return (value.keys
             .map((key) => _hashCombine(key.hashCode, _deepHashCode(value[key])))
             .toList(growable: false)
-              ..sort())
+          ..sort())
         .reduce(_hashCombine);
   }
   return value.hashCode;

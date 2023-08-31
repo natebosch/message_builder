@@ -14,7 +14,9 @@ Method buildHashCode(String name, Iterable<MessageField> fields) {
       ..lambda = true
       ..body = literalNum(base).code);
   }
-  final statements = <Code>[literalNum(base).assignVar('hash').statement];
+  final statements = <Code>[
+    declareVar('hash').assign(literalNum(base)).statement
+  ];
   statements.addAll(fields.map((field) =>
       Code('hash = _hashCombine(hash, _deepHashCode(${field.name}));')));
   statements.add(Code('return _hashComplete(hash);'));
