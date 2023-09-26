@@ -1,3 +1,4 @@
+// @dart=2.12
 abstract class ParentMessage {
   factory ParentMessage.fromJson(Map params) {
     final selectBy = params['selectField'];
@@ -21,15 +22,19 @@ class FirstChildMessage implements ParentMessage {
 
   factory FirstChildMessage.fromJson(Map params) => FirstChildMessage._(
       params.containsKey('firstField') && params['firstField'] != null
-          ? (params['firstField'] as int)
+          ? (params['firstField'] as int?)
           : null);
 
-  final int firstField;
+  final int? firstField;
 
   final selectField = 'firstValue';
 
   @override
-  Map toJson() => {'firstField': firstField, 'selectField': 'firstValue'};
+  Map toJson() => {
+        'firstField': firstField,
+        'selectField': 'firstValue',
+      };
+
   @override
   int get hashCode {
     var hash = 307866602;
@@ -45,7 +50,7 @@ class FirstChildMessage implements ParentMessage {
 class FirstChildMessage$Builder {
   FirstChildMessage$Builder._();
 
-  int firstField;
+  int? firstField;
 }
 
 class SecondChildMessage implements ParentMessage {
@@ -59,15 +64,19 @@ class SecondChildMessage implements ParentMessage {
 
   factory SecondChildMessage.fromJson(Map params) => SecondChildMessage._(
       params.containsKey('secondField') && params['secondField'] != null
-          ? (params['secondField'] as String)
+          ? (params['secondField'] as String?)
           : null);
 
-  final String secondField;
+  final String? secondField;
 
   final selectField = 'secondValue';
 
   @override
-  Map toJson() => {'secondField': secondField, 'selectField': 'secondValue'};
+  Map toJson() => {
+        'secondField': secondField,
+        'selectField': 'secondValue',
+      };
+
   @override
   int get hashCode {
     var hash = 34131136;
@@ -83,7 +92,7 @@ class SecondChildMessage implements ParentMessage {
 class SecondChildMessage$Builder {
   SecondChildMessage$Builder._();
 
-  String secondField;
+  String? secondField;
 }
 
 class ThirdChildMessage implements ParentMessage {
@@ -95,8 +104,10 @@ class ThirdChildMessage implements ParentMessage {
 
   @override
   Map toJson() => {'selectField': 'thirdValue'};
+
   @override
   int get hashCode => 560423767;
+
   @override
   bool operator ==(Object other) => other is ThirdChildMessage;
 }
@@ -125,7 +136,7 @@ int _deepHashCode(dynamic value) {
     return (value.keys
             .map((key) => _hashCombine(key.hashCode, _deepHashCode(value[key])))
             .toList(growable: false)
-              ..sort())
+          ..sort())
         .reduce(_hashCombine);
   }
   return value.hashCode;

@@ -1,3 +1,4 @@
+// @dart=2.12
 class MessageUsingEnum {
   MessageUsingEnum._(this.enumField);
 
@@ -12,9 +13,10 @@ class MessageUsingEnum {
           ? SomeEnum.fromJson((params['enumField'] as int))
           : null);
 
-  final SomeEnum enumField;
+  final SomeEnum? enumField;
 
   Map toJson() => {'enumField': enumField?.toJson()};
+
   @override
   int get hashCode {
     var hash = 819494400;
@@ -30,13 +32,18 @@ class MessageUsingEnum {
 class MessageUsingEnum$Builder {
   MessageUsingEnum$Builder._();
 
-  SomeEnum enumField;
+  SomeEnum? enumField;
 }
 
 class SomeEnum {
   factory SomeEnum.fromJson(int value) {
-    const values = {2: SomeEnum.anotherValue, 1: SomeEnum.someValue};
-    return values[value];
+    const values = {
+      2: SomeEnum.anotherValue,
+      1: SomeEnum.someValue,
+    };
+    return values[value] ??
+        (throw FormatException(
+            '$value is not a valid wire value for SomeEnum'));
   }
 
   const SomeEnum._(this._value);
@@ -70,7 +77,7 @@ int _deepHashCode(dynamic value) {
     return (value.keys
             .map((key) => _hashCombine(key.hashCode, _deepHashCode(value[key])))
             .toList(growable: false)
-              ..sort())
+          ..sort())
         .reduce(_hashCombine);
   }
   return value.hashCode;
