@@ -16,6 +16,7 @@ class InnerMessageInList {
   final String? anotherField;
 
   Map toJson() => {'anotherField': anotherField};
+
   @override
   int get hashCode {
     var hash = 620164184;
@@ -54,6 +55,7 @@ class OuterMessageWithList {
   final List<InnerMessageInList?>? innerField;
 
   Map toJson() => {'innerField': innerField?.map((v) => v?.toJson()).toList()};
+
   @override
   int get hashCode {
     var hash = 248509690;

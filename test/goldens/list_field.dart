@@ -31,6 +31,7 @@ class SomeListMessage {
         'intList': intList,
         'stringList': stringList,
       };
+
   @override
   int get hashCode {
     var hash = 530163;

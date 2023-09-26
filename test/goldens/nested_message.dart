@@ -16,6 +16,7 @@ class InnerMessage {
   final String? anotherField;
 
   Map toJson() => {'anotherField': anotherField};
+
   @override
   int get hashCode {
     var hash = 407157155;
@@ -66,6 +67,7 @@ class OuterMessage {
         'innerField': innerField?.toJson(),
         'stringField': stringField,
       };
+
   @override
   int get hashCode {
     var hash = 556777058;

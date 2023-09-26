@@ -31,6 +31,7 @@ class SomeMessage {
         'intField': intField,
         'stringField': stringField,
       };
+
   @override
   int get hashCode {
     var hash = 530289568;

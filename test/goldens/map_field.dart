@@ -16,6 +16,7 @@ class AnotherMessage {
   final Map<String, String?>? innerMessageMap;
 
   Map toJson() => {'innerMessageMap': innerMessageMap};
+
   @override
   int get hashCode {
     var hash = 170180962;
@@ -114,6 +115,7 @@ class SomeMapMessage {
               v?.toJson(),
             )),
       };
+
   @override
   int get hashCode {
     var hash = 1073311120;

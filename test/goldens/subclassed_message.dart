@@ -34,6 +34,7 @@ class FirstChildMessage implements ParentMessage {
         'firstField': firstField,
         'selectField': 'firstValue',
       };
+
   @override
   int get hashCode {
     var hash = 307866602;
@@ -75,6 +76,7 @@ class SecondChildMessage implements ParentMessage {
         'secondField': secondField,
         'selectField': 'secondValue',
       };
+
   @override
   int get hashCode {
     var hash = 34131136;
@@ -102,8 +104,10 @@ class ThirdChildMessage implements ParentMessage {
 
   @override
   Map toJson() => {'selectField': 'thirdValue'};
+
   @override
   int get hashCode => 560423767;
+
   @override
   bool operator ==(Object other) => other is ThirdChildMessage;
 }

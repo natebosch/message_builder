@@ -16,6 +16,7 @@ class MessageUsingEnum {
   final SomeEnum? enumField;
 
   Map toJson() => {'enumField': enumField?.toJson()};
+
   @override
   int get hashCode {
     var hash = 819494400;
