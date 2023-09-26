@@ -1,5 +1,4 @@
-// @dart=2.12
-class SomeMessage {
+final class SomeMessage {
   SomeMessage._(
     this.intField,
     this.stringField,
@@ -47,7 +46,7 @@ class SomeMessage {
       stringField == other.stringField;
 }
 
-class SomeMessage$Builder {
+final class SomeMessage$Builder {
   SomeMessage$Builder._();
 
   int? intField;

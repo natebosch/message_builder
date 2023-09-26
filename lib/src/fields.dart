@@ -1,6 +1,6 @@
 import 'package:code_builder/code_builder.dart';
 
-class MessageField {
+final class MessageField {
   final String name;
   final FieldType type;
   MessageField(this.name, this.type);
@@ -32,7 +32,7 @@ class MessageField {
 
 const _primitives = ['String', 'int', 'bool', 'dynamic'];
 
-abstract class FieldType {
+abstract interface class FieldType {
   Expression toJson(Expression e);
   Expression fromParams(
       Expression fieldValue, Map<String, Reference> enumWireTypes);
@@ -59,7 +59,7 @@ abstract class FieldType {
   }
 }
 
-class PrimitiveFieldType implements FieldType {
+final class PrimitiveFieldType implements FieldType {
   final String name;
   PrimitiveFieldType(this.name);
 
@@ -86,7 +86,7 @@ class PrimitiveFieldType implements FieldType {
       refer(leftToken).equalTo(refer(rightToken));
 }
 
-class MessageFieldType implements FieldType {
+final class MessageFieldType implements FieldType {
   final String name;
   MessageFieldType(this.name);
 
@@ -116,7 +116,7 @@ class MessageFieldType implements FieldType {
       refer(leftToken).equalTo(refer(rightToken));
 }
 
-class ListFieldType implements FieldType {
+final class ListFieldType implements FieldType {
   final FieldType typeArgument;
   ListFieldType(this.typeArgument);
 
@@ -172,7 +172,7 @@ class ListFieldType implements FieldType {
       refer('_deepEquals').call([refer(leftToken), refer(rightToken)]);
 }
 
-class MapFieldType implements FieldType {
+final class MapFieldType implements FieldType {
   final FieldType typeArgument;
   MapFieldType(this.typeArgument);
 

@@ -1,5 +1,4 @@
-// @dart=2.12
-class AnotherMessage {
+final class AnotherMessage {
   AnotherMessage._(this.innerMessageMap);
 
   factory AnotherMessage(void Function(AnotherMessage$Builder) init) {
@@ -33,13 +32,13 @@ class AnotherMessage {
       );
 }
 
-class AnotherMessage$Builder {
+final class AnotherMessage$Builder {
   AnotherMessage$Builder._();
 
   Map<String, String?>? innerMessageMap;
 }
 
-class SomeMapMessage {
+final class SomeMapMessage {
   SomeMapMessage._(
     this.intMap,
     this.listMap,
@@ -147,7 +146,7 @@ class SomeMapMessage {
       );
 }
 
-class SomeMapMessage$Builder {
+final class SomeMapMessage$Builder {
   SomeMapMessage$Builder._();
 
   Map<String, int?>? intMap;

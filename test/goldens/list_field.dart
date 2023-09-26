@@ -1,5 +1,4 @@
-// @dart=2.12
-class SomeListMessage {
+final class SomeListMessage {
   SomeListMessage._(
     this.intList,
     this.stringList,
@@ -53,7 +52,7 @@ class SomeListMessage {
       );
 }
 
-class SomeListMessage$Builder {
+final class SomeListMessage$Builder {
   SomeListMessage$Builder._();
 
   List<int?>? intList;

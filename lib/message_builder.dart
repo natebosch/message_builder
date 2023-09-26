@@ -9,7 +9,7 @@ import 'src/description.dart';
 
 Builder messageBuilder(_) => const MessageBuilder();
 
-class MessageBuilder implements Builder {
+final class MessageBuilder implements Builder {
   const MessageBuilder();
 
   @override
@@ -44,7 +44,7 @@ class MessageBuilder implements Builder {
         allocator: Allocator.simplePrefixing(), useNullSafetySyntax: true);
     final content = DartFormatter().format(library.accept(emitter).toString());
     await buildStep.writeAsString(
-        buildStep.inputId.changeExtension('.dart'), '// @dart=2.12\n$content');
+        buildStep.inputId.changeExtension('.dart'), content);
   }
 }
 
