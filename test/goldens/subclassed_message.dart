@@ -1,5 +1,4 @@
-// @dart=2.12
-abstract class ParentMessage {
+abstract final class ParentMessage {
   factory ParentMessage.fromJson(Map params) {
     final selectBy = params['selectField'];
     if (selectBy == 'firstValue') return FirstChildMessage.fromJson(params);
@@ -11,7 +10,7 @@ abstract class ParentMessage {
   Map toJson();
 }
 
-class FirstChildMessage implements ParentMessage {
+final class FirstChildMessage implements ParentMessage {
   FirstChildMessage._(this.firstField);
 
   factory FirstChildMessage(void Function(FirstChildMessage$Builder) init) {
@@ -47,13 +46,13 @@ class FirstChildMessage implements ParentMessage {
       other is FirstChildMessage && firstField == other.firstField;
 }
 
-class FirstChildMessage$Builder {
+final class FirstChildMessage$Builder {
   FirstChildMessage$Builder._();
 
   int? firstField;
 }
 
-class SecondChildMessage implements ParentMessage {
+final class SecondChildMessage implements ParentMessage {
   SecondChildMessage._(this.secondField);
 
   factory SecondChildMessage(void Function(SecondChildMessage$Builder) init) {
@@ -89,13 +88,13 @@ class SecondChildMessage implements ParentMessage {
       other is SecondChildMessage && secondField == other.secondField;
 }
 
-class SecondChildMessage$Builder {
+final class SecondChildMessage$Builder {
   SecondChildMessage$Builder._();
 
   String? secondField;
 }
 
-class ThirdChildMessage implements ParentMessage {
+final class ThirdChildMessage implements ParentMessage {
   const ThirdChildMessage();
 
   const ThirdChildMessage.fromJson([_]);
@@ -112,7 +111,7 @@ class ThirdChildMessage implements ParentMessage {
   bool operator ==(Object other) => other is ThirdChildMessage;
 }
 
-class ThirdChildMessage$Builder {
+final class ThirdChildMessage$Builder {
   ThirdChildMessage$Builder._();
 }
 

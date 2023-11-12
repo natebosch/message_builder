@@ -1,5 +1,4 @@
-// @dart=2.12
-class InnerMessage {
+final class InnerMessage {
   InnerMessage._(this.anotherField);
 
   factory InnerMessage(void Function(InnerMessage$Builder) init) {
@@ -29,13 +28,13 @@ class InnerMessage {
       other is InnerMessage && anotherField == other.anotherField;
 }
 
-class InnerMessage$Builder {
+final class InnerMessage$Builder {
   InnerMessage$Builder._();
 
   String? anotherField;
 }
 
-class OuterMessage {
+final class OuterMessage {
   OuterMessage._(
     this.innerField,
     this.stringField,
@@ -83,7 +82,7 @@ class OuterMessage {
       stringField == other.stringField;
 }
 
-class OuterMessage$Builder {
+final class OuterMessage$Builder {
   OuterMessage$Builder._();
 
   InnerMessage? innerField;

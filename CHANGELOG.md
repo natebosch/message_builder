@@ -1,3 +1,7 @@
+## 0.3.0-wip
+
+- Update to Dart 3. Generate classes that are all `final`.
+
 ## 0.2.0
 
 - Emit null safe dart with a `2.12` language version marker.

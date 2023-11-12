@@ -4,7 +4,7 @@ import 'equality.dart';
 import 'fields.dart';
 import 'hash_code.dart';
 
-abstract class Description {
+abstract interface class Description {
   Iterable<Spec> implementation(Map<String, Reference> enumWireTypes);
   bool get hasCollectionField;
   factory Description.parse(String name, Map params) {
@@ -47,7 +47,7 @@ Iterable<EnumValue> _parseEnumValues(Map values) {
   return names.map((name) => EnumValue(name, values[name]));
 }
 
-class EnumType implements Description {
+final class EnumType implements Description {
   final String name;
   final Reference wireType;
   final Iterable<EnumValue> values;
@@ -100,6 +100,7 @@ class EnumType implements Description {
       ..body = refer('_value').code);
     return [
       Class((b) => b
+        ..modifier = ClassModifier.final$
         ..name = name
         ..fields.addAll(constValues)
         ..fields.add(valueField)
@@ -110,14 +111,14 @@ class EnumType implements Description {
   }
 }
 
-class EnumValue {
+final class EnumValue {
   final String name;
   final Expression wireId;
   EnumValue(this.name, dynamic /*String|int*/ wireValue)
       : wireId = literal(wireValue);
 }
 
-class SubclassedMessage implements Description {
+final class SubclassedMessage implements Description {
   final String name;
   final List<Message> subclasses;
   final String subclassBy;
@@ -153,6 +154,7 @@ class SubclassedMessage implements Description {
       ..name = 'toJson');
     return [
       Class((b) => b
+        ..modifier = ClassModifier.final$
         ..abstract = true
         ..name = name
         ..constructors.add(fromJson)
@@ -162,7 +164,7 @@ class SubclassedMessage implements Description {
   }
 }
 
-class Message implements Description {
+final class Message implements Description {
   final String name;
   final List<MessageField> fields;
   final String? parent;
@@ -209,6 +211,7 @@ class Message implements Description {
       }
     });
     final clazz = Class((b) => b
+      ..modifier = ClassModifier.final$
       ..name = name
       ..implements.addAll(implements)
       ..fields.addAll(fieldDeclarations)
@@ -217,6 +220,7 @@ class Message implements Description {
       ..methods.add(buildHashCode(name, fields))
       ..methods.add(buildEquals(name, fields)));
     final builder = Class((b) => b
+      ..modifier = ClassModifier.final$
       ..name = _builderName
       ..fields.addAll(fields.map((f) => f.declaration))
       ..constructors.add(Constructor((b) => b..name = '_')));

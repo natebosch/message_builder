@@ -1,5 +1,4 @@
-// @dart=2.12
-class MessageUsingEnum {
+final class MessageUsingEnum {
   MessageUsingEnum._(this.enumField);
 
   factory MessageUsingEnum(void Function(MessageUsingEnum$Builder) init) {
@@ -29,13 +28,13 @@ class MessageUsingEnum {
       other is MessageUsingEnum && enumField == other.enumField;
 }
 
-class MessageUsingEnum$Builder {
+final class MessageUsingEnum$Builder {
   MessageUsingEnum$Builder._();
 
   SomeEnum? enumField;
 }
 
-class SomeEnum {
+final class SomeEnum {
   factory SomeEnum.fromJson(int value) {
     const values = {
       2: SomeEnum.anotherValue,
